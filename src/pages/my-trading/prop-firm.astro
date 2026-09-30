@@ -1,6 +1,396 @@
 ---
----
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prop Firm Tracker — Trade Avata</title></head>
-<body><main><a href={`${base}my-trading/`}>← My Trading</a><p>MEMBER AREA</p><h1>Prop Firm Tracker</h1><p>Store the exact rules and account details for each program you use.</p><div class="box"><h2>Program setup</h2><p>Add a prop firm program, its rules, and the associated trading account.</p><button type="button">Add program</button></div><div class="box"><h2>Evidence-based analysis</h2><p>Analytics can compare observed account data with the rules you enter. It does not predict whether an account will pass or fail.</p></div></main></body></html>
-<style>body{margin:0;background:#07111f;color:#edf4ff;font:16px system-ui,sans-serif}main{max-width:900px;margin:auto;padding:40px 22px}a{color:#9dccff}p{color:#9eacc0;line-height:1.6}.box{margin-top:20px;padding:26px;border:1px solid #26354a;border-radius:18px;background:#0b1726}button{padding:12px 18px;border:0;border-radius:10px;background:white;color:#07111f;font-weight:700}</style>
 const base = import.meta.env.BASE_URL;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>Prop Firm Tracker — Trade Avata</title>
+  </head>
+
+  <body>
+    <main>
+      <header class="topbar">
+        <a
+          href={`${base}my-trading/`}
+          class="back-link"
+        >
+          ← My Trading
+        </a>
+
+        <span class="member-label">
+          MEMBER AREA
+        </span>
+      </header>
+
+      <section class="hero">
+        <p class="eyebrow">TRADING DEVELOPMENT</p>
+
+        <h1>Prop Firm Tracker</h1>
+
+        <p class="lead">
+          Store the exact rules, account details and trading
+          requirements for each prop firm program you use.
+        </p>
+      </section>
+
+      <section class="box">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">PROGRAM SETUP</p>
+            <h2>Add your prop firm program</h2>
+          </div>
+
+          <span class="status">
+            Ready
+          </span>
+        </div>
+
+        <p>
+          Add a prop firm program, its rules, and the
+          associated trading account. Your information can
+          later be used by Trade Avata Analytics to compare
+          observed account activity against the rules you
+          entered.
+        </p>
+
+        <button type="button">
+          Add program
+        </button>
+      </section>
+
+      <section class="box">
+        <p class="eyebrow">ACCOUNT RULES</p>
+
+        <h2>Keep the rules in one place</h2>
+
+        <div class="rule-grid">
+          <article class="rule">
+            <span>01</span>
+            <h3>Account size</h3>
+            <p>
+              Record the starting balance and account size.
+            </p>
+          </article>
+
+          <article class="rule">
+            <span>02</span>
+            <h3>Daily loss limit</h3>
+            <p>
+              Record the maximum daily loss allowed.
+            </p>
+          </article>
+
+          <article class="rule">
+            <span>03</span>
+            <h3>Maximum drawdown</h3>
+            <p>
+              Record the overall drawdown restriction.
+            </p>
+          </article>
+
+          <article class="rule">
+            <span>04</span>
+            <h3>Profit target</h3>
+            <p>
+              Record the target required by the program.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="box">
+        <p class="eyebrow">EVIDENCE-BASED ANALYSIS</p>
+
+        <h2>Understand your account against its rules</h2>
+
+        <p>
+          Trade Avata Analytics can compare observed account
+          data with the rules you enter. The system is designed
+          to show measurable information and areas to review.
+          It does not predict whether an account will pass or
+          fail.
+        </p>
+
+        <div class="notice">
+          <strong>Important</strong>
+          <span>
+            Prop firm rules can change. Always verify the
+            current rules with the relevant provider.
+          </span>
+        </div>
+      </section>
+
+      <section class="actions">
+        <a
+          href={`${base}analytics/`}
+          class="primary"
+        >
+          Open AI Analytics
+        </a>
+
+        <a
+          href={`${base}my-trading/accounts/`}
+          class="secondary"
+        >
+          Manage Accounts
+        </a>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #07111f;
+    color: #edf4ff;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  main {
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 30px 0 70px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #ffffff14;
+  }
+
+  .back-link {
+    color: #9dccff;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .member-label {
+    color: #7f90a7;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+  }
+
+  .hero {
+    padding: 70px 0 40px;
+  }
+
+  .eyebrow {
+    margin: 0 0 10px;
+    color: #79b7ff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 850px;
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  h2 {
+    margin: 0 0 12px;
+    font-size: clamp(24px, 4vw, 34px);
+    line-height: 1.1;
+  }
+
+  h3 {
+    margin: 8px 0 8px;
+    font-size: 18px;
+  }
+
+  .lead {
+    max-width: 720px;
+    margin: 22px 0 0;
+    color: #9eacc0;
+    font-size: 18px;
+    line-height: 1.65;
+  }
+
+  .box {
+    margin-top: 18px;
+    padding: 30px;
+    border: 1px solid #ffffff14;
+    border-radius: 20px;
+    background: #ffffff08;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .box > p,
+  .rule p {
+    color: #96a5ba;
+    line-height: 1.65;
+  }
+
+  button {
+    margin-top: 14px;
+    padding: 13px 18px;
+    border: 0;
+    border-radius: 11px;
+    background: #ffffff;
+    color: #07111f;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  .status {
+    padding: 7px 11px;
+    border: 1px solid #71d5a133;
+    border-radius: 999px;
+    background: #71d5a10d;
+    color: #71d5a1;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .rule-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .rule {
+    padding: 20px;
+    border: 1px solid #ffffff12;
+    border-radius: 15px;
+    background: #07111f;
+  }
+
+  .rule span {
+    color: #79b7ff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .rule p {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .notice {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 22px;
+    padding: 16px 18px;
+    border-left: 3px solid #79b7ff;
+    background: #ffffff08;
+    border-radius: 0 12px 12px 0;
+  }
+
+  .notice strong {
+    font-size: 14px;
+  }
+
+  .notice span {
+    color: #96a5ba;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 18px;
+    border-radius: 11px;
+    text-decoration: none;
+    font-weight: 800;
+  }
+
+  .primary {
+    background: #ffffff;
+    color: #07111f;
+  }
+
+  .secondary {
+    border: 1px solid #ffffff1a;
+    color: #cbd8e8;
+    background: #ffffff08;
+  }
+
+  .primary:hover,
+  .secondary:hover {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 800px) {
+    .rule-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .hero {
+      padding-top: 50px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    main {
+      width: min(100% - 24px, 1100px);
+      padding-top: 18px;
+    }
+
+    .topbar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .section-header {
+      flex-direction: column;
+    }
+
+    .rule-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .box {
+      padding: 22px;
+    }
+
+    .actions {
+      flex-direction: column;
+    }
+
+    .actions a {
+      width: 100%;
+    }
+  }
+</style>
