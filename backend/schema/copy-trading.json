@@ -1,0 +1,9 @@
+{
+  "siteSettings/copyTrading": {"private": true, "publicVisible": false, "memberRegistration": false, "masterRegistration": false, "copierRegistration": false, "testExecution": false, "liveExecution": false, "maintenance": false},
+  "copyTradingProviders": {"ownerId":"", "name":"", "status":"draft|testing|live|paused", "platform":"mt5|mt4|ctrader|tradingview|other", "accountId":"", "feeModel":"subscription|performance|free", "feeAmount":0, "riskPolicyId":"", "published":false, "createdAt":"timestamp", "updatedAt":"timestamp"},
+  "copyTradingCopiers": {"userId":"", "tradingAccountId":"", "providerId":"", "allocation":0, "riskMultiplier":1, "maxExposure":0, "status":"pending|active|paused|stopped", "createdAt":"timestamp", "updatedAt":"timestamp"},
+  "copyTradingRelationships": {"providerId":"", "copierId":"", "status":"pending|active|paused|stopped", "settings":{"allocation":0,"riskMultiplier":1,"maxExposure":0,"maxDailyLoss":0}, "createdAt":"timestamp","updatedAt":"timestamp"},
+  "copyTradingInstructions": {"relationshipId":"", "sourceTradeId":"", "symbol":"", "side":"buy|sell","sourceVolume":0,"calculatedVolume":0,"status":"queued|risk_blocked|sent|filled|rejected|failed|cancelled", "executionAdapter":"", "errorCode":"", "errorMessage":"", "createdAt":"timestamp","updatedAt":"timestamp"},
+  "copyTradingBilling": {"userId":"", "providerId":"", "status":"pending|active|past_due|cancelled", "planId":"", "amount":0, "currency":"USD", "providerPaymentReference":"", "createdAt":"timestamp","updatedAt":"timestamp"},
+  "copyTradingAudit": {"actorId":"", "action":"", "targetId":"", "metadata":{}, "createdAt":"timestamp"}
+}

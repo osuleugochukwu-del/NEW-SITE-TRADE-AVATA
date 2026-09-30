@@ -1,0 +1,83 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/roles/$(request.auth.uid)) && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role in ['superAdmin', 'admin', 'staff']; }
+    function isSuperAdmin() { return signedIn() && exists(/databases/$(database)/documents/roles/$(request.auth.uid)) && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role in ['superAdmin', 'admin']; }
+    function isOwner(userId) { return signedIn() && request.auth.uid == userId; }
+    function isCopyTester() { return signedIn() && exists(/databases/$(database)/documents/roles/$(request.auth.uid)) && (get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == 'copyTradingTester' || get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.permissions.hasAny(['copyTrading.test','maintenance.bypass'])); }
+    function isPublic(resource) { return resource.data.public == true; }
+    function isCourseEnrolled(courseId) { return signedIn() && exists(/databases/$(database)/documents/enrollments/$(request.auth.uid + '_' + courseId)) && get(/databases/$(database)/documents/enrollments/$(request.auth.uid + '_' + courseId)).data.status in ['active', 'completed']; }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && request.resource.data.email == request.auth.token.email && request.resource.data.keys().hasOnly(['email','displayName','photoURL','createdAt','updatedAt','lastLoginAt']);
+      allow update: if isOwner(userId) && request.resource.data.email == resource.data.email && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName','photoURL','updatedAt','lastLoginAt']);
+      allow delete: if isAdmin();
+    }
+    match /roles/{userId} { allow read: if isOwner(userId) || isAdmin(); allow write: if isSuperAdmin(); }
+    match /products/{productId} { allow read: if isPublic(resource) || isAdmin(); allow write: if isAdmin(); }
+    match /courses/{courseId} { allow read: if isPublic(resource) || isAdmin() || isCourseEnrolled(courseId); allow write: if isAdmin(); }
+    match /courses/{courseId}/modules/{moduleId} { allow read: if isAdmin() || resource.data.public == true || isCourseEnrolled(courseId); allow write: if isAdmin(); }
+    match /courses/{courseId}/modules/{moduleId}/lessons/{lessonId} {
+      allow read: if isAdmin() || resource.data.public == true || isCourseEnrolled(courseId);
+      allow write: if isAdmin();
+      match /content/{contentId} { allow read: if isAdmin() || resource.data.public == true || (isCourseEnrolled(courseId) && (!resource.data.keys().hasAny(['previousProgressId']) || resource.data.previousProgressId == null || exists(/databases/$(database)/documents/progress/$(resource.data.previousProgressId)))); allow write: if isAdmin(); }
+    }
+    match /announcements/{announcementId} { allow read: if isPublic(resource) || isAdmin(); allow write: if isAdmin(); }
+    match /articles/{articleId} { allow read: if isPublic(resource) || isAdmin(); allow write: if isAdmin(); }
+    match /siteSettings/{settingId} { allow read: if isAdmin() || resource.data.public == true || (settingId == 'global') || (settingId == 'copyTrading' && isCopyTester()); allow write: if isAdmin(); }
+    match /featureFlags/{flagId} { allow read: if isAdmin() || resource.data.public == true; allow write: if isAdmin(); }
+    match /enrollments/{enrollmentId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow write: if isAdmin(); }
+    match /progress/{progressId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow create: if isOwner(request.resource.data.userId) && isCourseEnrolled(request.resource.data.courseId); allow update: if isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && resource.data.courseId == request.resource.data.courseId; allow delete: if isAdmin(); }
+    match /entitlements/{entitlementId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow write: if isAdmin(); }
+    match /orders/{orderId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow write: if isAdmin(); }
+    match /subscriptions/{subscriptionId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow write: if isAdmin(); }
+    match /notifications/{notificationId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow update: if isOwner(resource.data.userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read','readAt']); allow create, delete: if isAdmin(); }
+    match /supportTickets/{ticketId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow create: if signedIn() && request.resource.data.userId == request.auth.uid; allow update: if isAdmin(); allow delete: if isAdmin(); }
+    match /contactMessages/{messageId} { allow read: if isAdmin(); allow create: if request.resource.data.keys().hasOnly(['name','email','subject','message','status','createdAt','website']) && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 100 && request.resource.data.email is string && request.resource.data.email.size() >= 3 && request.resource.data.email.size() <= 200 && request.resource.data.subject is string && request.resource.data.subject.size() >= 1 && request.resource.data.subject.size() <= 160 && request.resource.data.message is string && request.resource.data.message.size() >= 1 && request.resource.data.message.size() <= 4000 && request.resource.data.status == 'new' && request.resource.data.website == ''; allow update: if isAdmin(); allow delete: if isAdmin(); }
+    match /certificates/{certificateId} { allow read: if isAdmin() || isOwner(resource.data.userId); allow write: if isAdmin(); }
+    match /auditLogs/{logId} { allow read: if isAdmin(); allow create: if isAdmin(); allow update, delete: if false; }
+
+    // Public anonymous support. No registration is required; anonymous Firebase Auth supplies visitorUid.
+    match /supportConversations/{conversationId} {
+      allow create: if signedIn() && request.resource.data.visitorUid == request.auth.uid && request.resource.data.status == 'open';
+      allow read: if isAdmin() || (signedIn() && resource.data.visitorUid == request.auth.uid);
+      allow update: if isAdmin() || (signedIn() && resource.data.visitorUid == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMessage','lastMessageAt','updatedAt','unreadForAdmin','unreadForVisitor']));
+      allow delete: if isAdmin();
+      match /messages/{messageId} {
+        allow read: if isAdmin() || (signedIn() && get(/databases/$(database)/documents/supportConversations/$(conversationId)).data.visitorUid == request.auth.uid);
+        allow create: if signedIn() && (isAdmin() || get(/databases/$(database)/documents/supportConversations/$(conversationId)).data.visitorUid == request.auth.uid) && request.resource.data.senderUid == request.auth.uid;
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+    }
+    match /emailTemplates/{templateId} { allow read, write: if isAdmin(); }
+    match /emailCampaigns/{campaignId} { allow read, write: if isAdmin(); }
+    match /emailLogs/{logId} { allow read: if isAdmin(); allow write: if false; }
+    match /mail/{mailId} { allow create: if isAdmin(); allow read: if isAdmin(); allow update, delete: if false; }
+
+
+    match /journalWorkspaces/{uid} { allow read, write: if isOwner(uid) || isAdmin(); }
+    match /userSettings/{uid} { allow read, write: if isOwner(uid) || isAdmin(); }
+    match /analyticsPreferences/{uid} { allow read, write: if isOwner(uid) || isAdmin(); }
+    match /homepageIndicators/{indicatorId} { allow read: if isPublic(resource) || isAdmin(); allow write: if isAdmin(); }
+    match /platformAnalytics/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /analyticsEvents/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /propFirmPrograms/{id} { allow read: if isPublic(resource) || isAdmin(); allow write: if isAdmin(); }
+    match /propFirmAccounts/{id} { allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid); allow write: if isAdmin() || (signedIn() && request.resource.data.userId == request.auth.uid); }
+    match /adSlots/{id} { allow read: if isAdmin() || resource.data.enabled == true; allow write: if isAdmin(); }
+    match /lessonResources/{id} { allow read: if resource.data.public == true || isAdmin(); allow write: if isAdmin(); }
+
+    match /copyTradingProviders/{id} { allow read: if isAdmin() || (signedIn() && resource.data.ownerId == request.auth.uid); allow write: if isAdmin() || (signedIn() && request.resource.data.ownerId == request.auth.uid); }
+    match /copyTradingCopiers/{id} { allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid); allow write: if isAdmin() || (signedIn() && request.resource.data.userId == request.auth.uid); }
+    match /copyTradingRelationships/{id} { allow read: if isAdmin() || (signedIn() && (resource.data.copierUserId == request.auth.uid || resource.data.providerOwnerId == request.auth.uid)); allow write: if isAdmin() || isCopyTester(); }
+    match /copyTradingInstructions/{id} { allow read: if isAdmin() || isCopyTester(); allow create: if isAdmin() || isCopyTester(); allow update: if isAdmin() || isCopyTester(); allow delete: if false; }
+    match /copyTradingBilling/{id} { allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid); allow write: if isAdmin(); }
+    match /copyTradingAudit/{id} { allow read: if isAdmin(); allow create: if isAdmin() || isCopyTester(); allow update, delete: if false; }
+
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

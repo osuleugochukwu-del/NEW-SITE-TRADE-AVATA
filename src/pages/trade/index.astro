@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const products = [
+  ['Indicators','Provided trading indicators with platform information, documentation, access and version details.','Explore indicators'],
+  ['TradingView','Charting and market workflows designed to help you analyse markets more clearly.','Open TradingView'],
+  ['cTrader','Platform resources and tools for traders working with cTrader.','Explore cTrader'],
+  ['Market','A focused market area for prices, watchlists, charts and market context.','View market']
+];
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Trade — Trade Avata" description="Trading products, indicators, platforms and market resources from Trade Avata.">
+  <section class="section">
+    <div class="shell split">
+      <div><span class="eyebrow">Trade</span><h1 class="page-title">Practical technology for the trading journey.</h1><p class="lead">Trade Avata provides indicators, platform resources, market tools and trading technology without turning the experience into a wall of controls.</p><div style="margin-top:24px"><a class="button" href="#live-demo">View live indicator demo</a></div></div>
+      <div class="feature-visual" aria-label="Trading technology visual"></div>
+    </div>
+  </section>
+  <section class="section" id="live-demo">
+    <div class="shell">
+      <div class="section-head"><div><span class="eyebrow">Live indicator demo</span><h2>See the product before you choose it.</h2></div><p>Switch platforms to view the relevant indicator presentation and product context.</p></div>
+      <div class="card">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px" role="tablist" aria-label="Trading platforms">
+          <button class="chip" type="button" data-platform="MT4">MT4</button><button class="chip" type="button" data-platform="MT5">MT5</button><button class="chip" type="button" data-platform="cTrader">cTrader</button><button class="chip" type="button" data-platform="TradingView">TradingView</button>
+        </div>
+        <div style="min-height:250px;border:1px solid var(--line);border-radius:16px;background:radial-gradient(circle at 75% 25%,rgba(45,140,255,.18),transparent 30%),#07111f;display:grid;place-items:center;text-align:center;padding:24px">
+          <div><span class="eyebrow">Selected platform</span><h3 id="platform-label" style="font-size:32px;margin:8px 0">MT4</h3><p id="platform-copy" style="color:var(--muted);max-width:500px;margin:auto">Indicator presentation for MetaTrader 4.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="shell grid grid-4">
+      {products.map(([title,desc,link]) => <a class="card card-link" href={`${base}trade/`}>
+        <div class="icon">+</div><h3>{title}</h3><p>{desc}</p><span style="display:block;margin-top:18px;color:var(--sky);font-size:13px;font-weight:750">{link} →</span>
+      </a>)}
+    </div>
+  </section>
+  <script is:inline>
+    const copy={MT4:'Indicator presentation for MetaTrader 4.',MT5:'Indicator presentation for MetaTrader 5.',cTrader:'Indicator presentation for cTrader.',TradingView:'Indicator presentation for TradingView.'};
+    document.querySelectorAll('[data-platform]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelector('#platform-label').textContent=btn.dataset.platform;document.querySelector('#platform-copy').textContent=copy[btn.dataset.platform];}));
+  </script>
+</BaseLayout>

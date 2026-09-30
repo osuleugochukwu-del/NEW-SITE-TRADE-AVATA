@@ -1,0 +1,10 @@
+{
+  "siteSettings/global": {
+    "maintenanceMode": false,
+    "maintenanceTitle": "Trade Avata is under maintenance",
+    "maintenanceMessage": "We are making improvements. Please check back soon.",
+    "allowAdminAccess": true,
+    "allowTesterAccess": true,
+    "updatedAt": "timestamp"
+  }
+}

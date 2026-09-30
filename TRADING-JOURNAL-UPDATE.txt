@@ -1,0 +1,33 @@
+TRADE AVATA — TRADING JOURNAL / NOTION-STYLE DATABASE BUILD
+
+This build replaces the previous card-heavy Journal interface with a modern database-first trading workspace inspired by the supplied reference screenshots.
+
+WHAT IS INCLUDED
+- Database/table-first Journal with compact property columns.
+- Click any trade to open a detailed right-side record panel.
+- Notion-like property tags, filters, search and sorting without copying Notion branding or UI assets.
+- Table and Gallery views.
+- Winning, losing, incomplete and Today views.
+- Custom strategy library: create a strategy once, save it, and reuse it from any trade.
+- Custom journal properties: text, select, multi-select, number, date and checkbox fields.
+- Duplicate trade, import JSON and export JSON.
+- Automatic local persistence for offline-first use.
+- Optional Firebase cloud synchronization through journalWorkspaces/{uid} when Firebase is configured and the user is signed in.
+- Decision fields: thesis, confluences and execution notes.
+- Review fields: setup quality, execution quality, lesson and chart/evidence link.
+- Integrated Trade Avata AI review panel.
+- Secure Firebase Function endpoint for AI review. The provider API key remains server-side.
+- Local evidence-based fallback review when the AI provider is not configured or unavailable.
+
+AI ARCHITECTURE
+The browser sends only journal evidence to the Trade Avata Firebase Function reviewJournal. The provider secret is read from the server environment variable TRADE_AVATA_AI_API_KEY and is never committed to GitHub or exposed as a PUBLIC_* variable.
+
+Server variables are documented in .env.example:
+- TRADE_AVATA_AI_API_KEY
+- TRADE_AVATA_AI_API_URL
+- TRADE_AVATA_AI_MODEL
+
+The browser can use PUBLIC_TRADE_AVATA_AI_ENDPOINT if a custom function URL is desired. If that variable is empty and PUBLIC_FIREBASE_PROJECT_ID is available, the Journal automatically targets the default us-central1 Firebase Function URL.
+
+DESIGN INTENT
+The supplied reference is used as the interaction model: a clean database, compact properties, colored values, selectable records and a detailed record view. The implementation is Trade Avata's own interface rather than a copied Notion page.

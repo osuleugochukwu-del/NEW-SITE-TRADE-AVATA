@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const platforms = ['All','MT5','MT4','cTrader','TradingView'];
+const products = [
+  ['Trade Avata Indicator Suite','MT5, MT4, cTrader, TradingView','Indicator'],
+  ['Trading Workspace','cTrader, TradingView','Platform'],
+  ['Trading Resources Pack','All','Digital Product'],
+  ['Trading Foundations','All','Course']
+];
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Store — Trade Avata" description="Indicators, courses, digital products and subscriptions from Trade Avata.">
+  <section class="section"><div class="shell"><div class="section-head"><div><span class="eyebrow">Store</span><h1 class="page-title">Choose what you need. Keep it simple.</h1></div><p>No giant search interface. Browse the products directly and use the platform filters when you need them.</p></div>
+    <div class="platforms" aria-label="Store platform filters">{platforms.map((p,i)=><button class={i===0?'active':''} data-platform={p} type="button">{p}</button>)}</div>
+  </div></section>
+  <section class="section"><div class="shell"><div class="store-grid">{products.map(([name,platform,type])=><article class="store-card" data-platforms={platform}><div class="store-image" aria-hidden="true"></div><span class="chip">{type}</span><h3>{name}</h3><p>{platform}</p><a class="button small" href={`${base}register/`}>View →</a></article>)}</div></div></section>
+</BaseLayout>
+<script>
+const buttons=[...document.querySelectorAll('[data-platform]')]; const cards=[...document.querySelectorAll('[data-platforms]')];
+buttons.forEach(btn=>btn.addEventListener('click',()=>{buttons.forEach(b=>b.classList.remove('active'));btn.classList.add('active');const wanted=btn.dataset.platform;cards.forEach(c=>{c.hidden=wanted!=='All'&&!c.dataset.platforms.split(', ').includes(wanted)&&c.dataset.platforms!=='All';});}));
+</script>
+<style>
+.platforms{display:flex;gap:8px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}.platforms::-webkit-scrollbar{display:none}.platforms button{flex:0 0 auto;border:1px solid var(--line);background:transparent;color:var(--text);padding:9px 14px;border-radius:999px;font-weight:750;cursor:pointer}.platforms button.active{background:var(--sky);color:#fff;border-color:var(--sky)}
+.store-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.store-card{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:14px;min-width:0}.store-card[hidden]{display:none}.store-image{height:150px;border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--sky) 18%,var(--panel)),var(--panel));margin-bottom:14px}.store-card h3{margin:12px 0 5px}.store-card p{color:var(--muted);font-size:13px}.button.small{display:inline-flex;padding:9px 12px;margin-top:6px;font-size:12px}@media(max-width:900px){.store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.store-grid{grid-template-columns:1fr}.store-image{height:125px}}
+</style>

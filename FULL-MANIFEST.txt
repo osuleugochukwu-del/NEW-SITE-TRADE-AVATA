@@ -1,0 +1,13 @@
+TRADE AVATA — COMPLETE SINGLE-UPLOAD BUILD
+
+This package is the consolidated Trade Avata website source. Upload its contents to one GitHub repository root.
+
+No layered upload is required.
+
+The package consolidates the public website, landing pages, analytics/journal workspace, My Trading area, copy-trading architecture, admin pages, Firebase rules/configuration, Cloud Functions source, assets, PWA files and GitHub Pages deployment workflow.
+
+The package also includes the corrected Trade Avata logo under public/brand/ and base-path-safe internal navigation.
+
+Before production use, provide Firebase/deployment secrets through secure environment configuration. Do not commit credentials.
+
+Live broker execution remains separately controlled and is not enabled simply by uploading this source.

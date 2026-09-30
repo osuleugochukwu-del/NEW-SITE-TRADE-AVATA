@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Prop Firm Tracker — Trade Avata" description="Track configured prop firm challenge rules and progress inside Trade Avata.">
+  <section class="ta-page-shell">
+    <div class="ta-page-head">
+      <span class="ta-eyebrow">TRADING ACCOUNT</span>
+      <h1>Prop Firm Tracker</h1>
+      <p>Track a configured evaluation or funded account against the rules that apply to it. Trade Avata does not assume one universal prop-firm rule set.</p>
+    </div>
+    <div class="ta-prop-grid">
+      <article class="ta-panel"><span>Account</span><strong data-account>Not connected</strong><small>Connect a supported trading account to populate live account data.</small></article>
+      <article class="ta-panel"><span>Program</span><strong data-program>Not configured</strong><small>Rules are entered for the specific program.</small></article>
+      <article class="ta-panel"><span>Status</span><strong data-status>Awaiting account</strong><small>Rule status is calculated from account records and configured rules.</small></article>
+    </div>
+    <div class="ta-panel ta-rule-panel">
+      <div class="ta-section-divider"><span></span><h2>Configured Rules</h2><span></span></div>
+      <div class="ta-rule-grid">
+        <div><span>Profit target</span><strong data-rule="profitTarget">—</strong></div>
+        <div><span>Daily loss limit</span><strong data-rule="dailyLossLimit">—</strong></div>
+        <div><span>Maximum drawdown</span><strong data-rule="maxDrawdown">—</strong></div>
+        <div><span>Minimum trading days</span><strong data-rule="minTradingDays">—</strong></div>
+      </div>
+      <p class="ta-note">Rules must be configured for the exact prop-firm program. AI interpretation is evidence-based and does not predict whether an account will pass.</p>
+      <a class="ta-button ta-button-small" href={`${base}analytics/`}>Open Analytics →</a>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+.ta-page-shell{max-width:1120px;margin:0 auto;padding:64px 20px}.ta-page-head{max-width:760px;margin-bottom:28px}.ta-page-head h1{font-size:clamp(2rem,5vw,4rem);margin:.35rem 0}.ta-page-head p{color:#8ea6bc;line-height:1.7}.ta-prop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.ta-panel{background:#071426;border:1px solid #29445f;border-radius:18px;padding:20px}.ta-panel span,.ta-panel small{display:block;color:#8ea6bc}.ta-panel strong{display:block;font-size:1.3rem;margin:.5rem 0}.ta-rule-panel{margin-top:14px}.ta-rule-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.ta-rule-grid div{padding:15px;border:1px solid #29445f;border-radius:12px}.ta-note{color:#8ea6bc;line-height:1.6}@media(max-width:760px){.ta-prop-grid,.ta-rule-grid{grid-template-columns:1fr}.ta-page-shell{padding-top:40px}}
+</style>

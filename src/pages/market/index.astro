@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const markets=['Forex','Gold','Indices','Crypto','Commodities'];
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Market — Trade Avata" description="Market information, watchlists and charting resources from Trade Avata.">
+  <section class="section"><div class="shell"><span class="eyebrow">Market</span><h1 class="page-title">A clean place to watch the markets that matter to you.</h1><p class="lead">Market data, charts and watchlists can be connected to supported providers without hard-coding a data source into the public experience.</p></div></section>
+  <section class="section"><div class="shell"><div class="section-head"><div><span class="eyebrow">Market groups</span><h2>Keep the view focused.</h2></div><p>Members can save watchlists while public market content remains lightweight and readable.</p></div><div class="grid grid-3">{markets.map(name=><a class="card card-link" href={`${base}market/`}><span class="chip">Market</span><h3 style="margin-top:16px">{name}</h3><p>Prices, percentage change, status and watchlist support.</p></a>)}</div></div></section>
+</BaseLayout>

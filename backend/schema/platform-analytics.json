@@ -1,0 +1,55 @@
+{
+  "purpose": "Aggregated platform usage and operational analytics for Trade Avata administrators.",
+  "principles": [
+    "Measure platform usage without unnecessary personal data.",
+    "Prefer aggregated country-level location over exact location.",
+    "Keep customer trading analytics separate from Trade Avata platform analytics.",
+    "AI usage is metered by analysis run, not by open-ended chat messages."
+  ],
+  "events": [
+    "page_view",
+    "session_started",
+    "registration_completed",
+    "login_completed",
+    "course_viewed",
+    "course_started",
+    "course_completed",
+    "product_viewed",
+    "purchase_completed",
+    "tool_used",
+    "indicator_demo_viewed",
+    "account_connected",
+    "ai_analytics_run",
+    "ai_journal_analysis_run",
+    "journal_entry_created",
+    "voice_journal_transcription",
+    "report_generated",
+    "support_ticket_created",
+    "error_recorded"
+  ],
+  "admin_metrics": [
+    "active_users_now",
+    "active_users_today",
+    "active_users_7_days",
+    "active_users_30_days",
+    "new_registrations",
+    "top_countries",
+    "top_pages",
+    "top_tools",
+    "ai_analytics_usage",
+    "ai_journal_usage",
+    "journal_activity",
+    "course_activity",
+    "product_activity",
+    "account_connection_activity",
+    "conversion_funnel",
+    "system_errors"
+  ],
+  "time_ranges": ["today", "yesterday", "7_days", "30_days", "90_days", "custom"],
+  "privacy": {
+    "country_level_only": true,
+    "do_not_store_exact_location": true,
+    "avoid_raw_sensitive_trading_data_in_usage_events": true,
+    "respect_applicable_privacy_and_cookie_requirements": true
+  }
+}

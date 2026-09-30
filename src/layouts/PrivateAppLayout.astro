@@ -1,0 +1,23 @@
+---
+const { title = 'Trade Avata', description = 'Private Trade Avata workspace.' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="description" content={description} /><title>{title}</title>
+<script is:inline>try{const t=localStorage.getItem('ta-theme');document.documentElement.dataset.theme=t==='light'?'light':'dark';const a=localStorage.getItem('ta-accent');if(a)document.documentElement.dataset.accent=a}catch(e){}</script>
+</head>
+<body data-base-url={base}><slot /></body>
+</html>
+<style is:global>
+:root{--app-bg:#070b12;--app-panel:#0d131d;--app-panel2:#111a27;--app-border:#1c2735;--app-text:#edf3fb;--app-muted:#8290a5;--app-accent:#4b8cff;--app-accent-2:#64d7ff;--app-success:#37d39b;--app-danger:#ff6f7d}
+:root[data-theme="light"]{--app-bg:#f5f7fb;--app-panel:#fff;--app-panel2:#eef2f7;--app-border:#d8dee8;--app-text:#172033;--app-muted:#657188}
+:root[data-accent="purple"]{--app-accent:#8b5cf6;--app-accent-2:#c4b5fd}:root[data-accent="red"]{--app-accent:#ef4444;--app-accent-2:#fca5a5}:root[data-accent="green"]{--app-accent:#10b981;--app-accent-2:#6ee7b7}:root[data-accent="gold"]{--app-accent:#d6a84f;--app-accent-2:#f1d28a}:root[data-accent="blue"],:root:not([data-accent]){--app-accent:#4b8cff;--app-accent-2:#64d7ff}
+body{margin:0;background:var(--app-bg);color:var(--app-text);font-family:Inter,ui-sans-serif,system-ui,sans-serif}*{box-sizing:border-box}a{color:inherit;text-decoration:none}.theme-controls{position:fixed;right:18px;bottom:18px;z-index:100;display:flex;gap:8px;padding:8px;border:1px solid var(--app-border);border-radius:14px;background:color-mix(in srgb,var(--app-panel) 92%,transparent);box-shadow:0 12px 40px rgba(0,0,0,.2)}.theme-controls button{border:1px solid var(--app-border);background:var(--app-panel2);color:var(--app-text);border-radius:9px;padding:7px 10px;font-size:12px}.theme-controls select{border:1px solid var(--app-border);background:var(--app-panel2);color:var(--app-text);border-radius:9px;padding:7px}
+</style>
+<div class="theme-controls" aria-label="Appearance controls"><button type="button" data-theme-toggle>Theme</button><select data-accent-select aria-label="Accent color"><option value="blue">Blue</option><option value="purple">Purple</option><option value="red">Red</option><option value="green">Green</option><option value="gold">Gold</option></select></div>
+<script is:inline>
+const r=document.documentElement;document.querySelector('[data-theme-toggle]')?.addEventListener('click',()=>{const n=r.dataset.theme==='light'?'dark':'light';r.dataset.theme=n;localStorage.setItem('ta-theme',n)});const s=document.querySelector('[data-accent-select]');if(s){s.value=r.dataset.accent||'blue';s.addEventListener('change',()=>{r.dataset.accent=s.value;localStorage.setItem('ta-accent',s.value)})}
+</script>

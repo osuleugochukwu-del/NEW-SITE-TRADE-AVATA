@@ -1,0 +1,36 @@
+---
+const accounts = [
+  { name: "Main Trading Account", platform: "MT5", status: "Connected", balance: "$10,000.00", equity: "$10,240.50", pnl: "+$240.50" },
+  { name: "Evaluation Account", platform: "cTrader", status: "Ready", balance: "$25,000.00", equity: "$24,680.00", pnl: "-$320.00" }
+];
+const cards = [
+  ["Trading Accounts", "Connect and manage MT4, MT5 and cTrader accounts.", `${base}my-trading/accounts/`, "View accounts"],
+  ["Journal", "Record plans, executions, reviews and lessons.", `${base}journal/`, "Open journal"],
+  ["AI Analytics", "Turn account and trade data into evidence-based insights.", `${base}analytics/`, "Open analytics"],
+  ["Prop Firm Tracker", "Keep program rules and account details together.", `${base}my-trading/prop-firm/`, "View tracker"]
+];
+const base = import.meta.env.BASE_URL;
+---
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><title>My Trading — Trade Avata</title></head>
+<body>
+<main class="page">
+<header class="topbar">
+<a href={base} class="brand"><img src={`${base}brand/trade-avata-logo.svg`} alt="Trade Avata" /></a>
+<nav><a href={base}>Home</a><a href={`${base}trade/`}>Trade</a><a href={`${base}tools/`}>Tools</a><a href={`${base}my-trading/`} aria-current="page">My Trading</a></nav>
+</header>
+<section class="hero"><div><p class="eyebrow">MEMBER AREA</p><h1>My Trading</h1><p class="lead">One place for your trading accounts, journal, analytics and trading development.</p></div><a class="button" href={`${base}my-trading/accounts/`}>Manage accounts</a></section>
+<section class="grid">
+{cards.map(([title,text,href,action]) => <article class="card"><span class="dot"></span><h2>{title}</h2><p>{text}</p><a href={href}>{action} →</a></article>)}
+</section>
+<section class="panel">
+<div class="section-heading"><div><p class="eyebrow">CONNECTED ACCOUNTS</p><h2>Your trading accounts</h2></div><a href={`${base}my-trading/accounts/`}>Manage</a></div>
+<div class="accounts">{accounts.map((a) => <article class="account"><div><h3>{a.name}</h3><p>{a.platform} · {a.status}</p></div><div><small>Balance</small><strong>{a.balance}</strong></div><div><small>Equity</small><strong>{a.equity}</strong></div><div><small>Net P&amp;L</small><strong class:list={{positive:a.pnl.startsWith("+"),negative:a.pnl.startsWith("-")}}>{a.pnl}</strong></div></article>)}</div>
+</section>
+<section class="panel"><p class="eyebrow">TRADING DEVELOPMENT</p><h2>Plan. Trade. Review. Improve.</h2><p>Your trading data should help you understand what happened, why it happened, and what to investigate next.</p><div class="steps"><span>01 Plan</span><span>02 Trade</span><span>03 Record</span><span>04 Review</span><span>05 Investigate</span><span>06 Update</span></div></section>
+</main>
+</body>
+</html>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#07111f;color:#edf4ff;font:16px system-ui,sans-serif}.page{max-width:1180px;margin:auto;padding:22px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:8px 0 42px;border-bottom:1px solid #ffffff1a}.brand img{width:210px}nav{display:flex;gap:22px;flex-wrap:wrap}nav a,.card a,.section-heading a{color:#9dccff;text-decoration:none}.hero{display:flex;align-items:end;justify-content:space-between;gap:30px;padding:70px 0 45px}.eyebrow{color:#79b7ff;font-size:12px;font-weight:800;letter-spacing:.14em}h1{font-size:clamp(42px,7vw,76px);line-height:.95;margin:0}h2{margin:0 0 10px}.lead{max-width:650px;color:#9eacc0;font-size:18px;line-height:1.6}.button{padding:13px 18px;border-radius:12px;background:white;color:#07111f;text-decoration:none;font-weight:800}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card,.panel{border:1px solid #ffffff1a;background:#ffffff09;border-radius:18px}.card{padding:24px;min-height:205px;display:flex;flex-direction:column}.card p,.panel>p{color:#96a5ba;line-height:1.55;flex:1}.dot{width:10px;height:10px;border-radius:50%;background:#7ab8ff;margin-bottom:25px}.panel{margin-top:18px;padding:28px}.section-heading{display:flex;justify-content:space-between;margin-bottom:18px}.accounts{display:grid;gap:10px}.account{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:20px;padding:18px;border:1px solid #ffffff14;border-radius:14px}.account h3{margin:0 0 5px}.account p,small{color:#8494a9;margin:0}.account strong{display:block;margin-top:6px}.positive{color:#71d5a1}.negative{color:#ff9b9b}.steps{display:flex;flex-wrap:wrap;gap:8px}.steps span{padding:9px 12px;border:1px solid #ffffff1a;border-radius:999px;color:#c6d2e1;font-size:13px}@media(max-width:850px){.topbar,.hero{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr 1fr}.account{grid-template-columns:1fr 1fr}}@media(max-width:560px){.page{padding:16px}.brand img{width:185px}.grid{grid-template-columns:1fr}.account{grid-template-columns:1fr}}
+</style>

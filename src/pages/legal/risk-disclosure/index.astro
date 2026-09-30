@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Risk Disclosure — Trade Avata" description="Trade Avata risk disclosure and trading risk information.">
+  <section class="section"><div class="shell" style="max-width:900px">
+    <span class="eyebrow">Risk Disclosure</span>
+    <h1 class="page-title">Trading involves substantial risk.</h1>
+    <p class="lead">Trade Avata provides trading technology, educational material, analytical tools and related products. These materials are for informational and educational purposes and are not financial advice.</p>
+    <div class="card" style="margin-top:28px">
+      <h2>Understand the risks</h2>
+      <p>Trading leveraged products and financial markets can result in losses, including losses greater than the amount initially committed depending on the product and provider. Past performance does not guarantee future results.</p>
+      <p>Indicators, analytics, automated calculations and AI-generated observations can contain errors or limitations. They should not be treated as a guarantee of trading results.</p>
+      <p>You are responsible for your own trading decisions, risk management, account settings and choice of broker or financial service provider.</p>
+      <p>Before trading, make sure you understand the product, leverage, fees, liquidity and applicable rules in your jurisdiction and consider whether the activity is appropriate for you.</p>
+      <a class="button button-small" href={`${base}about/`} style="margin-top:12px">About Trade Avata</a>
+    </div>
+  </div></section>
+</BaseLayout>

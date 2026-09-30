@@ -1,0 +1,23 @@
+<div id="copyGate" data-copy-gate><div class="gate-card"><span>TRADE AVATA</span><h1>Private Copy Trading Workspace</h1><p>This module is enabled for authorized testing only. Public visibility is controlled from the admin backend.</p><div class="gate-status" id="gateStatus">Checking access…</div></div></div>
+<script type="module">
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { firebaseApp } from '../lib/firebase/config.js';
+const gate=document.querySelector('[data-copy-gate]');
+async function run(){
+  if(!firebaseApp){ gate.innerHTML='<div class="gate-card"><span>TRADE AVATA</span><h1>Private module</h1><p>Firebase is not configured in this environment yet.</p></div>'; return; }
+  const auth=getAuth(firebaseApp), db=getFirestore(firebaseApp);
+  onAuthStateChanged(auth,async user=>{
+    if(!user){ gate.innerHTML='<div class="gate-card"><span>PRIVATE ACCESS</span><h1>Sign in required</h1><p>Copy Trading is private during testing. Sign in with an authorized Trade Avata account.</p><a class="gate-btn" href={`${base}login/`}>Sign in</a></div>'; return; }
+    const role=await getDoc(doc(db,'roles',user.uid)); const settings=await getDoc(doc(db,'siteSettings','copyTrading'));
+    const data=role.exists()?role.data():{}; const cfg=settings.exists()?settings.data():{};
+    const allowed=['superAdmin','admin','staff','copyTradingTester'].includes(data.role)||data.permissions?.includes?.('copyTrading.test');
+    if(!allowed){gate.innerHTML='<div class="gate-card"><span>PRIVATE ACCESS</span><h1>Not available for this account</h1><p>Your account is not authorized to use the private Copy Trading workspace.</p></div>';return;}
+    gate.remove(); document.dispatchEvent(new CustomEvent('ta-copy-authorized',{detail:{userId:user.uid,config:cfg}}));
+  });
+}
+run().catch(()=>{gate.innerHTML='<div class="gate-card"><h1>Access check unavailable</h1><p>Please try again after the backend is available.</p></div>'});
+</script>
+<style is:global>
+[data-copy-gate]{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#070b12;color:#edf3fb;padding:24px}.gate-card{max-width:560px;text-align:center;border:1px solid #1c2735;border-radius:22px;padding:42px;background:#0d131d;box-shadow:0 25px 80px rgba(0,0,0,.35)}.gate-card span{font-size:11px;letter-spacing:.16em;color:#64d7ff}.gate-card h1{font-size:34px;margin:14px 0}.gate-card p{color:#8290a5;line-height:1.7}.gate-btn{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:10px;background:#4b8cff;color:#fff}
+</style>

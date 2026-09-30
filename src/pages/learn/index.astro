@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const courses = [
+  ['Trading Foundations','Build a clear foundation for reading markets, managing risk and planning trades.','Beginner'],
+  ['Technical Analysis','Study market structure, price behaviour, levels and practical chart analysis.','Intermediate'],
+  ['Risk Management','Build position sizing, risk limits and repeatable decision rules into your process.','All levels'],
+  ['Trading Psychology','Work on discipline, emotional awareness and consistent execution.','All levels'],
+  ['cTrader & Platforms','Learn practical platform workflows, charting and trading-tool usage.','Intermediate'],
+  ['Strategy & Market Analysis','Develop a structured process for evaluating setups and market conditions.','Advanced']
+];
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Learn — Trade Avata" description="Trading education, courses and practical learning resources from Trade Avata.">
+  <section class="section">
+    <div class="shell">
+      <span class="eyebrow">Learn</span>
+      <h1 class="page-title">Learn with a clear path, not a crowded dashboard.</h1>
+      <p class="lead">Trade Avata provides structured trading education, practical resources and platform-focused learning so you can move from concepts to a repeatable process.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:26px"><a class="button" href="#courses">Explore courses</a><a class="button" style="background:transparent;border-color:var(--line);box-shadow:none" href={`${base}learn/articles/`}>Read articles</a></div>
+    </div>
+  </section>
+  <section class="section" id="courses">
+    <div class="shell">
+      <div class="section-head"><div><span class="eyebrow">Course library</span><h2>Choose where you are going next.</h2></div><p>Course access, progression, lessons and resources are controlled by the platform so the public experience stays simple.</p></div>
+      <div class="grid grid-3">
+        {courses.map(([title,desc,level]) => <a class="card card-link" href={`${base}learn/course/`}>
+          <span class="chip">{level}</span><h3 style="margin-top:16px">{title}</h3><p>{desc}</p><span style="display:block;margin-top:20px;color:var(--sky);font-size:13px;font-weight:750">View course →</span>
+        </a>)}
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="shell split">
+      <div class="card feature"><span class="eyebrow">Learning journey</span><h2 style="font-size:34px;line-height:1.05;letter-spacing:-.04em">Start. Continue. Complete.</h2><p>Members can resume learning from their last position, see progress, unlock lessons according to course rules and receive certificates when a course is configured for completion.</p></div>
+      <div class="feature-visual" aria-label="Learning progress visual"></div>
+    </div>
+  </section>
+</BaseLayout>

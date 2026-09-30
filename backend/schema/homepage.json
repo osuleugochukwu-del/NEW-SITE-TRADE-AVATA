@@ -1,0 +1,47 @@
+{
+  "siteSettings/homepage": {
+    "public": true,
+    "hero": {
+      "eyebrow": "string",
+      "title1": "string",
+      "title2": "string",
+      "description": "string",
+      "image": "string",
+      "insight": "string",
+      "insightLink": "string",
+      "primaryLabel": "string",
+      "primaryUrl": "string",
+      "secondaryLabel": "string",
+      "secondaryUrl": "string"
+    },
+    "ai": {
+      "analytics": {"title":"string","subtitle":"string","description":"string","url":"string"},
+      "journal": {"title":"string","subtitle":"string","description":"string","url":"string"}
+    },
+    "featured": {
+      "name": "string",
+      "platform": "string",
+      "platforms": ["string"],
+      "image": "string",
+      "url": "string"
+    },
+    "cta": {
+      "title": "string",
+      "description": "string",
+      "image": "string",
+      "url": "string",
+      "stats": {"traders":"string","countries":"string","uptime":"string","support":"string"}
+    }
+  },
+  "homepageIndicators/{indicatorId}": {
+    "public": true,
+    "name": "string",
+    "platform": "MetaTrader 5 | MetaTrader 4 | cTrader | TradingView",
+    "access": "string",
+    "image": "string",
+    "url": "string",
+    "rating": "string",
+    "reviews": "string",
+    "order": 0
+  }
+}

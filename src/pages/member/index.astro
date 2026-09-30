@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Member Area — Trade Avata" description="Trade Avata member workspace and private trading tools.">
+  <section class="section"><div class="shell">
+    <span class="eyebrow">Member Area</span>
+    <h1 class="page-title">Your Trade Avata workspace.</h1>
+    <p class="lead">Access your private trading workspace, account records, analytics and journal tools.</p>
+    <div class="grid grid-3" style="margin-top:28px">
+      <a class="card card-link" href={`${base}my-trading/`}><h3>My Trading</h3><p>Manage trading accounts, review records and prepare your workspace.</p><span style="display:block;margin-top:18px;color:var(--sky);font-weight:750">Open My Trading →</span></a>
+      <a class="card card-link" href={`${base}analytics/`}><h3>AI Analytics</h3><p>Review trading performance, risk and behaviour insights.</p><span style="display:block;margin-top:18px;color:var(--sky);font-weight:750">Open Analytics →</span></a>
+      <a class="card card-link" href={`${base}journal/`}><h3>Trading Journal</h3><p>Plan, record, review and investigate your trading decisions.</p><span style="display:block;margin-top:18px;color:var(--sky);font-weight:750">Open Journal →</span></a>
+    </div>
+  </div></section>
+</BaseLayout>

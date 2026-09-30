@@ -1,0 +1,16 @@
+{
+  "adSlots/{slotId}": {
+    "name":"string",
+    "placement":"homepage|aiAnalytics|journal|tools|learn|store",
+    "provider":"adsense|custom",
+    "enabled":"boolean",
+    "publisherId":"string|null",
+    "slotId":"string|null",
+    "format":"rectangle|horizontal|responsive",
+    "maxWidth":"number",
+    "maxHeight":"number",
+    "mobileEnabled":"boolean",
+    "startAt":"timestamp|null",
+    "endAt":"timestamp|null"
+  }
+}

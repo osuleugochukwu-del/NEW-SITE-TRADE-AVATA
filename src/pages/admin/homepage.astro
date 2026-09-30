@@ -1,0 +1,217 @@
+---
+const base = import.meta.env.BASE_URL;
+---
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trade Avata — Homepage Manager</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color:#f5f9ff;background:#030d18;--panel:#071a2c;--line:#16466b;--blue:#0785ff;--muted:#aabbd0}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 70% 0,rgba(0,128,255,.15),transparent 32%),#030d18}.wrap{width:min(1180px,calc(100% - 28px));margin:auto;padding:30px 0 70px}
+    h1{margin:0 0 5px;font-size:34px}.lead{color:var(--muted);margin:0 0 25px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:linear-gradient(180deg,#0a2135,#061524);border:1px solid var(--line);border-radius:16px;padding:18px}.panel.full{grid-column:1/-1}.panel h2{font-size:18px;margin:0 0 14px}.panel h3{font-size:14px;margin:18px 0 9px}.fields{display:grid;gap:10px}.fields.two{grid-template-columns:1fr 1fr}.fields label{display:grid;gap:5px;color:#bfd0e1;font-size:11px}.fields input,.fields textarea,.fields select{width:100%;border:1px solid #1a496d;background:#041423;color:#fff;border-radius:9px;padding:10px 11px;outline:none}.fields textarea{min-height:90px;resize:vertical}.hint{font-size:10px;color:#7f98b0;line-height:1.5}.btn{border:1px solid #238fe2;background:#0785ff;color:#fff;border-radius:9px;padding:10px 14px;font-weight:800;cursor:pointer}.btn.alt{background:transparent;border-color:#24658d}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.status{margin:0 0 15px;padding:10px 12px;border-radius:9px;background:#071c2e;border:1px solid var(--line);color:#a9c5dd;font-size:12px}.status.bad{border-color:#8a3a45;color:#ffb8bd}.media{border:1px dashed #28658e;padding:10px;border-radius:10px}.media input[type=file]{font-size:11px}.media-preview{max-height:100px;max-width:100%;display:block;margin-top:8px;border-radius:8px}.indicator-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border-top:1px solid #123d5c;padding:12px 0}.indicator-row strong{font-size:13px}.indicator-row small{display:block;color:#829bb1}.danger{border-color:#8b4650!important;background:transparent!important}.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:12px}.locked{opacity:.55;pointer-events:none}@media(max-width:800px){.grid,.fields.two{grid-template-columns:1fr}.panel.full{grid-column:auto}.topbar{display:block}.topbar .row{margin-top:12px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div><h1>Homepage Manager</h1><p class="lead">Edit the homepage without changing source code. Images can be uploaded to Firebase Storage or referenced by a hosted URL.</p></div>
+    <div class="row"><a class="btn alt" href={base}>View Homepage</a><button class="btn" id="save-all">Save Homepage</button></div>
+  </div>
+  <div id="status" class="status">Checking administrator access…</div>
+
+  <div id="editor" class="grid locked">
+    <section class="panel full">
+      <h2>Hero</h2>
+      <div class="fields two">
+        <label>Eyebrow<input name="hero.eyebrow" value="Smarter Trading. Better Decisions." /></label>
+        <label>Market insight<input name="hero.insight" value="Gold remains above key support" /></label>
+        <label>Headline line 1<input name="hero.title1" value="Trade Smarter." /></label>
+        <label>Headline line 2<input name="hero.title2" value="Grow Faster." /></label>
+      </div>
+      <div class="fields">
+        <label>Description<textarea name="hero.description">Trade Avata is your trading technology platform, built to help you learn, analyse, and improve — with simple tools, powerful AI and real market insights.</textarea></label>
+        <div class="media"><strong>Hero image</strong><div class="hint">Recommended desktop: 1600 × 900 px or larger. Keep the file lightweight; target ≤ 1 MB, absolute maximum 5 MB. WebP/JPEG/PNG recommended.</div><div class="fields two"><label>Image URL<input name="hero.image" /></label><label>Upload image<input type="file" data-upload="hero" accept="image/png,image/jpeg,image/webp" /></label></div><img class="media-preview" data-preview="hero" alt="" /></div>
+        <div class="fields two"><label>Primary button text<input name="hero.primaryLabel" value="Get Started Free" /></label><label>Primary button URL<input name="hero.primaryUrl" value="${base}login/" /></label><label>Secondary button text<input name="hero.secondaryLabel" value="Explore Platform" /></label><label>Secondary button URL<input name="hero.secondaryUrl" value="${base}trade/" /></label><label>Insight link URL<input name="hero.insightLink" value="${base}market/" /></label></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>AI Analytics</h2>
+      <div class="fields"><label>Title<input name="ai.analytics.title" value="AI Analytics" /></label><label>Subtitle<input name="ai.analytics.subtitle" value="Your Trading Data. Our AI. Real Insights." /></label><label>Description<textarea name="ai.analytics.description">Automatically analyse your performance, risk, drawdown, trading behaviour and recurring patterns — all for free.</textarea></label><label>Button URL<input name="ai.analytics.url" value="${base}analytics/" /></label></div>
+    </section>
+    <section class="panel">
+      <h2>AI Journal</h2>
+      <div class="fields"><label>Title<input name="ai.journal.title" value="AI Journal" /></label><label>Subtitle<input name="ai.journal.subtitle" value="Record. Review. Learn." /></label><label>Description<textarea name="ai.journal.description">Write or speak your trading decisions and let AI analyse your execution, behaviour and recurring patterns.</textarea></label><label>Button URL<input name="ai.journal.url" value="${base}journal/" /></label></div>
+    </section>
+
+    <section class="panel full">
+      <h2>Featured Indicator</h2>
+      <div class="fields two">
+        <label>Indicator name<input name="featured.name" value="Trend Momentum Pro" /></label>
+        <label>Primary platform<input name="featured.platform" value="TradingView" /></label>
+        <label>Platforms shown (comma separated)<input name="featured.platforms" value="TradingView, MetaTrader 4, MetaTrader 5, cTrader" /></label>
+        <label>Details URL<input name="featured.url" value="${base}products/" /></label>
+      </div>
+      <div class="media" style="margin-top:10px"><strong>Featured indicator image</strong><div class="hint">Recommended: 1400 × 650 px or larger. Target ≤ 1 MB, absolute maximum 5 MB. Use a clean screenshot of the actual indicator. Wide images are deliberately given more space on the homepage.</div><div class="fields two"><label>Image URL<input name="featured.image" /></label><label>Upload image<input type="file" data-upload="featured" accept="image/png,image/jpeg,image/webp" /></label></div><img class="media-preview" data-preview="featured" alt="" /></div>
+    </section>
+
+    <section class="panel full">
+      <h2>Indicator catalogue — maximum 8 homepage indicators</h2>
+      <p class="hint">The public homepage will display up to eight records. Filters are All, MetaTrader 5, MetaTrader 4, cTrader and TradingView. Use the order field to control display order.</p>
+      <div id="indicator-list"></div>
+      <button class="btn" id="new-indicator" type="button">Add Indicator</button>
+    </section>
+
+    <section class="panel full">
+      <h2>Bottom CTA &amp; stats</h2>
+      <div class="fields two">
+        <label>CTA title<input name="cta.title" value="Ready to Take Your Trading to the Next Level?" /></label>
+        <label>CTA link URL<input name="cta.url" value="${base}login/" /></label>
+        <label>CTA description<textarea name="cta.description">Join traders using Trade Avata to make better decisions and build a more consistent process.</textarea></label>
+        <label>Active traders stat<input name="cta.stats.traders" value="50K+" /></label>
+        <label>Countries stat<input name="cta.stats.countries" value="120+" /></label>
+        <label>Uptime stat<input name="cta.stats.uptime" value="99.8%" /></label>
+        <label>Support stat<input name="cta.stats.support" value="24/7" /></label>
+      </div>
+      <div class="media" style="margin-top:10px"><strong>CTA background image</strong><div class="hint">Recommended: 1800 × 500 px or larger. Target ≤ 800 KB, absolute maximum 5 MB. Keep important text/details away from the edges because the image is used as a background.</div><div class="fields two"><label>Image URL<input name="cta.image" /></label><label>Upload image<input type="file" data-upload="cta" accept="image/png,image/jpeg,image/webp" /></label></div><img class="media-preview" data-preview="cta" alt="" /></div>
+    </section>
+  </div>
+</div>
+
+<script type="module">
+  import { watchAuth } from '../../lib/firebase/auth.js';
+  import { getAdminRole, listAdminCollection, removeAdminDocument, saveAdminDocument, writeAdminAudit } from '../../lib/firebase/admin.js';
+  import { uploadHomepageImage } from '../../lib/firebase/media.js';
+
+  const status = document.querySelector('#status');
+  const editor = document.querySelector('#editor');
+  const indicatorList = document.querySelector('#indicator-list');
+  let user = null;
+  let role = null;
+  let indicators = [];
+  let current = null;
+
+  const $ = (selector) => document.querySelector(selector);
+  const val = (name) => $(`[name="${name}"]`)?.value?.trim() || '';
+  const setVal = (name, value) => { const node = $(`[name="${name}"]`); if (node) node.value = value ?? ''; };
+  const text = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function notify(message, bad=false){status.textContent=message;status.classList.toggle('bad',bad)}
+
+  function collect() {
+    return {
+      public:true,
+      hero:{eyebrow:val('hero.eyebrow'),title1:val('hero.title1'),title2:val('hero.title2'),description:val('hero.description'),image:val('hero.image'),insight:val('hero.insight'),insightLink:val('hero.insightLink'),primaryLabel:val('hero.primaryLabel'),primaryUrl:val('hero.primaryUrl'),secondaryLabel:val('hero.secondaryLabel'),secondaryUrl:val('hero.secondaryUrl')},
+      ai:{
+        analytics:{title:val('ai.analytics.title'),subtitle:val('ai.analytics.subtitle'),description:val('ai.analytics.description'),url:val('ai.analytics.url')},
+        journal:{title:val('ai.journal.title'),subtitle:val('ai.journal.subtitle'),description:val('ai.journal.description'),url:val('ai.journal.url')}
+      },
+      featured:{name:val('featured.name'),platform:val('featured.platform'),platforms:val('featured.platforms').split(',').map(x=>x.trim()).filter(Boolean),image:val('featured.image'),url:val('featured.url')},
+      cta:{title:val('cta.title'),description:val('cta.description'),image:val('cta.image'),url:val('cta.url'),stats:{traders:val('cta.stats.traders'),countries:val('cta.stats.countries'),uptime:val('cta.stats.uptime'),support:val('cta.stats.support')}}
+    };
+  }
+
+  function fill(data){
+    current=data||{};
+    const d=collect();
+    const merged={
+      hero:{...JSON.parse(JSON.stringify(d.hero)),...(data?.hero||{})},
+      ai:{analytics:{...d.ai.analytics,...(data?.ai?.analytics||{})},journal:{...d.ai.journal,...(data?.ai?.journal||{})}},
+      featured:{...d.featured,...(data?.featured||{})},
+      cta:{...d.cta,...(data?.cta||{}),stats:{...d.cta.stats,...(data?.cta?.stats||{})}}
+    };
+    for(const [k,v] of Object.entries(merged.hero)) setVal(`hero.${k}`,v);
+    for(const [k,v] of Object.entries(merged.ai.analytics)) setVal(`ai.analytics.${k}`,v);
+    for(const [k,v] of Object.entries(merged.ai.journal)) setVal(`ai.journal.${k}`,v);
+    for(const [k,v] of Object.entries(merged.featured)) setVal(`featured.${k}`,Array.isArray(v)?v.join(', '):v);
+    for(const [k,v] of Object.entries(merged.cta)){ if(k==='stats') for(const [sk,sv] of Object.entries(v)) setVal(`cta.stats.${sk}`,sv); else setVal(`cta.${k}`,v); }
+    document.querySelector('[data-preview="hero"]').src=merged.hero.image||'';
+    document.querySelector('[data-preview="featured"]').src=merged.featured.image||'';
+    document.querySelector('[data-preview="cta"]').src=merged.cta.image||'';
+  }
+
+  function renderIndicators(){
+    indicatorList.innerHTML=indicators.map((item,i)=>`
+      <div class="indicator-row" data-id="${text(item.id)}">
+        <div><strong>${text(item.name||'Unnamed indicator')}</strong><small>${text(item.platform||'Platform')} · order ${Number(item.order||0)} · ${text(item.access||'Available')}</small></div>
+        <div class="row"><button class="btn alt" type="button" data-edit="${text(item.id)}">Edit</button><label class="btn alt">Upload image<input type="file" data-indicator-upload="${text(item.id)}" accept="image/png,image/jpeg,image/webp" hidden /></label><button class="btn danger" type="button" data-delete="${text(item.id)}">Delete</button></div>
+      </div>`).join('') || '<p class="hint">No indicators yet. Add up to eight.</p>';
+    indicatorList.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click',()=>editIndicator(btn.dataset.edit)));
+    indicatorList.querySelectorAll('[data-delete]').forEach(btn=>btn.addEventListener('click',()=>deleteIndicator(btn.dataset.delete)));
+    indicatorList.querySelectorAll('[data-indicator-upload]').forEach(input=>input.addEventListener('change',async()=>{
+      const file=input.files?.[0]; if(!file)return;
+      try{
+        notify(`Uploading indicator image…`);
+        const url=await uploadHomepageImage(file,`indicator-${input.dataset.indicatorUpload}`);
+        const item=indicators.find(x=>x.id===input.dataset.indicatorUpload);
+        if(item){ await saveAdminDocument('homepageIndicators',item.id,{image:url}); await writeAdminAudit({actorId:user.uid,action:'update',target:'homepageIndicatorImage',targetId:item.id}); await loadIndicators(); notify('Indicator image uploaded.'); }
+      }catch(e){notify(e?.message||'Indicator image upload failed.',true)}
+    }));
+  }
+
+  function editIndicator(id){
+    const item=indicators.find(x=>x.id===id)||{id:'',name:'',platform:'TradingView',access:'Free',image:'',url:'/products/',rating:'',reviews:'',order:indicators.length};
+    const name=prompt('Indicator name:',item.name||''); if(name===null)return;
+    const platform=prompt('Platform (MetaTrader 5, MetaTrader 4, cTrader, TradingView):',item.platform||''); if(platform===null)return;
+    const access=prompt('Access label (Free, Premium, etc.):',item.access||'Free'); if(access===null)return;
+    const image=prompt('Image URL (upload from the image manager below later if needed):',item.image||''); if(image===null)return;
+    const url=prompt('Details URL:',item.url||'/products/'); if(url===null)return;
+    const order=Number(prompt('Display order (0–7):',String(item.order??indicators.length))||0);
+    const rating=prompt('Rating:',item.rating||''); if(rating===null)return;
+    const reviews=prompt('Review count:',item.reviews||''); if(reviews===null)return;
+    saveIndicator({...item,name,platform,access,image,url,order,rating,reviews});
+  }
+  async function saveIndicator(item){
+    if(!user||!role)return;
+    if(!item.id && indicators.length>=8){notify('The homepage limit is 8 indicators.',true);return;}
+    const id=item.id||`indicator-${Date.now()}`;
+    await saveAdminDocument('homepageIndicators',id,{name:item.name,platform:item.platform,access:item.access,image:item.image,url:item.url,order:Number(item.order||0),rating:item.rating||'',reviews:item.reviews||'',public:true});
+    await writeAdminAudit({actorId:user.uid,action:item.id?'update':'create',target:'homepageIndicator',targetId:id});
+    await loadIndicators();
+    notify('Indicator saved.');
+  }
+  async function deleteIndicator(id){
+    if(!confirm('Remove this indicator from the homepage?'))return;
+    await removeAdminDocument('homepageIndicators',id);
+    await writeAdminAudit({actorId:user.uid,action:'delete',target:'homepageIndicator',targetId:id});
+    await loadIndicators();
+  }
+  async function loadIndicators(){ indicators=await listAdminCollection('homepageIndicators',8); indicators.sort((a,b)=>(a.order||0)-(b.order||0)); renderIndicators(); }
+
+  document.querySelector('#new-indicator').addEventListener('click',()=>editIndicator(''));
+  document.querySelector('#save-all').addEventListener('click',async()=>{
+    try{
+      await saveAdminDocument('siteSettings','homepage',collect());
+      await writeAdminAudit({actorId:user.uid,action:'update',target:'homepage',targetId:'homepage'});
+      notify('Homepage content saved. Refresh the public homepage to see the changes.');
+    }catch(e){notify(e?.message||'Unable to save homepage.',true)}
+  });
+
+  document.querySelectorAll('[data-upload]').forEach(input=>{
+    input.addEventListener('change',async()=>{
+      const file=input.files?.[0]; if(!file)return;
+      try{
+        notify(`Uploading ${file.name}…`);
+        const url=await uploadHomepageImage(file,input.dataset.upload);
+        setVal(input.dataset.upload==='hero'?'hero.image':input.dataset.upload==='featured'?'featured.image':'cta.image',url);
+        document.querySelector(`[data-preview="${input.dataset.upload}"]`).src=url;
+        notify(`${input.dataset.upload} image uploaded. Click Save Homepage to publish it.`);
+      }catch(e){notify(e?.message||'Upload failed.',true)}
+    });
+  });
+
+  watchAuth(async u=>{
+    user=u;
+    if(!u){notify('Sign in with an administrator/staff account to use Homepage Manager.',true);return;}
+    try{
+      role=await getAdminRole(u.uid);
+      if(!role){notify('This account does not have administrator or staff access.',true);return;}
+      editor.classList.remove('locked');
+      const settings=await listAdminCollection('siteSettings',100);
+      fill(settings.find(x=>x.id==='homepage')||{});
+      await loadIndicators();
+      notify(`Signed in as ${u.email||u.uid} · ${role.role}`);
+    }catch(e){notify(e?.message||'Unable to load homepage manager.',true)}
+  });
+</script>

@@ -1,0 +1,21 @@
+{
+  "socialLinks": [
+    {"id":"facebook","label":"Facebook","url":"","enabled":true,"order":1},
+    {"id":"instagram","label":"Instagram","url":"","enabled":true,"order":2},
+    {"id":"youtube","label":"YouTube","url":"","enabled":true,"order":3},
+    {"id":"x","label":"X","url":"","enabled":true,"order":4},
+    {"id":"tiktok","label":"TikTok","url":"","enabled":true,"order":5}
+  ],
+  "homepage": {
+    "heroEnabled": true,
+    "announcementEnabled": true,
+    "liveIndicatorDemoEnabled": true
+  },
+  "featureFlags": {
+    "aiAnalytics": true,
+    "journal": true,
+    "community": false,
+    "economicCalendar": false,
+    "heatmapTools": false
+  }
+}

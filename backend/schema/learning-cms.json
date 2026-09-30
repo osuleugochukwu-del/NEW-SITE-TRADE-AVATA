@@ -1,0 +1,6 @@
+{
+  "courses/{courseId}": {"title":"string","slug":"string","description":"string","coverImage":"string","level":"string","published":"boolean","order":"number"},
+  "courses/{courseId}/modules/{moduleId}": {"title":"string","description":"string","published":"boolean","order":"number"},
+  "courses/{courseId}/modules/{moduleId}/lessons/{lessonId}": {"title":"string","slug":"string","summary":"string","contentBlocks":"array","videoUrl":"string|null","imageUrl":"string|null","published":"boolean","order":"number"},
+  "lessonResources/{resourceId}": {"lessonId":"string","type":"image|video|link|download","url":"string","title":"string","order":"number"}
+}

@@ -1,0 +1,7 @@
+---
+const platforms = ["MT4","MT5","cTrader"];
+const base = import.meta.env.BASE_URL;
+---
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trading Accounts — Trade Avata</title></head>
+<body><main><a href={`${base}my-trading/`}>← My Trading</a><p>MEMBER AREA</p><h1>Trading Accounts</h1><p>Connect and manage the trading accounts that power your analytics and journal.</p><section><h2>Add a trading account</h2>{platforms.map(p => <button type="button">{p}</button>)}<p class="note">Broker authentication and live synchronization are integration features. This page does not fake a live connection.</p></section></main></body></html>
+<style>body{margin:0;background:#07111f;color:#edf4ff;font:16px system-ui,sans-serif}main{max-width:900px;margin:auto;padding:40px 22px}a{color:#9dccff}p{color:#9eacc0;line-height:1.6}section{margin-top:35px;padding:28px;border:1px solid #26354a;border-radius:18px}button{margin:6px;padding:12px 18px;border:1px solid #42536a;border-radius:10px;background:#101d2e;color:white}.note{margin-top:25px;font-size:14px}</style>

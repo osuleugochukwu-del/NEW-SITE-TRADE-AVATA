@@ -1,0 +1,276 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/homepage.css';
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Trade Avata — Trade Simple." description="Trade Avata — trading technology, indicators, tools, AI analytics, journaling and education designed to make trading simpler.">
+  <div class="ta-home" data-homepage>
+    <section class="ta-hero">
+      <div class="ta-container ta-hero-grid">
+        <div class="ta-hero-copy">
+          <span class="ta-eyebrow" data-hero-eyebrow>Smarter Trading. Better Decisions.</span>
+          <h1><span data-hero-title-1>Trade Smarter.</span><br /><span class="ta-blue" data-hero-title-2>Grow Faster.</span></h1>
+          <p data-hero-description>Trade Avata is your trading technology platform, built to help you learn, analyse, and improve — with simple tools, powerful AI and real market insights.</p>
+          <div class="ta-actions">
+            <a class="ta-button" data-hero-primary href={`${base}login/`}>Get Started Free <span>→</span></a>
+            <a class="ta-button ta-button-outline" data-hero-secondary href={`${base}trade/`}>Explore Platform</a>
+          </div>
+          <div class="ta-hero-points">
+            <div><b>◈</b><span><strong>Learn</strong><small>Proven Strategies</small></span></div>
+            <div><b>◆</b><span><strong>Trade</strong><small>Practice &amp; Execute</small></span></div>
+            <div><b>⌁</b><span><strong>Analyse</strong><small>With AI Insights</small></span></div>
+            <div><b>↗</b><span><strong>Grow</strong><small>Your Trading Journey</small></span></div>
+          </div>
+        </div>
+        <div class="ta-hero-media">
+          <img data-hero-image src={`${base}images/hero-laptop.svg`} alt="Trade Avata trading workstation" loading="eager" decoding="async" />
+          <div class="ta-market-insight">
+            <strong>Market Insights</strong>
+            <span data-hero-insight>Gold remains above key support</span>
+            <a data-hero-insight-link href={`${base}market/`}>View Analysis →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ta-ai-strip ta-container">
+      <article class="ta-ai-card">
+        <span class="ta-free">FREE</span>
+        <div class="ta-ai-icon">▥</div>
+        <div class="ta-ai-copy">
+          <h2 data-ai-title="analytics">AI Analytics</h2>
+          <strong data-ai-subtitle="analytics">Your Trading Data. Our AI. Real Insights.</strong>
+          <p data-ai-description="analytics">Automatically analyse your performance, risk, drawdown, trading behaviour and recurring patterns — all for free.</p>
+          <a class="ta-button ta-button-small" data-ai-link="analytics" href={`${base}analytics/`}>Try AI Analytics Free →</a>
+        </div>
+        <div class="ta-ai-visual ta-chart-lines"></div>
+      </article>
+      <article class="ta-ai-card">
+        <span class="ta-free">FREE</span>
+        <div class="ta-ai-icon">▣</div>
+        <div class="ta-ai-copy">
+          <h2 data-ai-title="journal">AI Journal</h2>
+          <strong data-ai-subtitle="journal">Record. Review. Learn.</strong>
+          <p data-ai-description="journal">Write or speak your trading decisions and let AI analyse your execution, behaviour and recurring patterns.</p>
+          <a class="ta-button ta-button-small" data-ai-link="journal" href={`${base}journal/`}>Start AI Journal Free →</a>
+        </div>
+        <div class="ta-ai-visual ta-mic-visual">◉</div>
+      </article>
+    </section>
+
+    <section class="ta-section ta-featured">
+      <div class="ta-container">
+        <div class="ta-section-divider"><span></span><h2>Featured Indicator</h2><span></span></div>
+        <article class="ta-featured-card">
+          <div class="ta-featured-copy">
+            <span class="ta-platform-badge" data-featured-platform>TradingView</span>
+            <h2 data-featured-name>Trend Momentum Pro</h2>
+            <div class="ta-featured-platforms" data-featured-platforms></div>
+            <a class="ta-button ta-button-small" data-featured-link href={`${base}products/`}>View Details →</a>
+          </div>
+          <div class="ta-featured-image-wrap">
+            <img data-featured-image src={`${base}images/indicator-placeholder.svg`} alt="Featured Trade Avata indicator preview" loading="lazy" decoding="async" />
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="ta-section ta-indicators">
+      <div class="ta-container">
+        <div class="ta-section-divider"><span></span><h2 data-indicator-heading>Trading Indicators</h2><span></span></div>
+        <div class="ta-filter-row" role="tablist" aria-label="Filter indicators by platform">
+          <button class="is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button data-filter="MetaTrader 5" role="tab" aria-selected="false">MetaTrader 5</button>
+          <button data-filter="MetaTrader 4" role="tab" aria-selected="false">MetaTrader 4</button>
+          <button data-filter="cTrader" role="tab" aria-selected="false">cTrader</button>
+          <button data-filter="TradingView" role="tab" aria-selected="false">TradingView</button>
+        </div>
+        <div class="ta-indicator-grid" data-indicator-grid></div>
+        <div class="ta-view-all-wrap"><a class="ta-button ta-button-outline" data-view-all href={`${base}products/`}>View All Indicators →</a></div>
+      </div>
+    </section>
+
+    <section class="ta-cta">
+      <div class="ta-cta-bg" data-cta-bg></div>
+      <div class="ta-container ta-cta-inner">
+        <div>
+          <h2 data-cta-title>Ready to Take Your Trading to the Next Level?</h2>
+          <p data-cta-description>Join traders using Trade Avata to make better decisions and build a more consistent process.</p>
+          <a class="ta-button ta-button-small" data-cta-link href={`${base}login/`}>Get Started Free →</a>
+        </div>
+        <div class="ta-stats">
+          <div><strong data-stat="traders">50K+</strong><span>Active Traders</span></div>
+          <div><strong data-stat="countries">120+</strong><span>Countries</span></div>
+          <div><strong data-stat="uptime">99.8%</strong><span>Uptime</span></div>
+          <div><strong data-stat="support">24/7</strong><span>Support</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { loadHomepageContent } from '../lib/firebase/homepage.js';
+
+  const base = document.body.dataset.baseUrl || '/';
+  const fallback = {
+    hero: {
+      eyebrow: 'Smarter Trading. Better Decisions.',
+      title1: 'Trade Smarter.',
+      title2: 'Grow Faster.',
+      description: 'Trade Avata is your trading technology platform, built to help you learn, analyse, and improve — with simple tools, powerful AI and real market insights.',
+      image: `${base}images/hero-laptop.svg`,
+      insight: 'Gold remains above key support',
+      insightLink: `${base}market/`,
+      primaryLabel: 'Get Started Free',
+      primaryUrl: `${base}login/`,
+      secondaryLabel: 'Explore Platform',
+      secondaryUrl: `${base}trade/`
+    },
+    ai: {
+      analytics: {
+        title: 'AI Analytics',
+        subtitle: 'Your Trading Data. Our AI. Real Insights.',
+        description: 'Automatically analyse your performance, risk, drawdown, trading behaviour and recurring patterns — all for free.',
+        url: `${base}analytics/`
+      },
+      journal: {
+        title: 'AI Journal',
+        subtitle: 'Record. Review. Learn.',
+        description: 'Write or speak your trading decisions and let AI analyse your execution, behaviour and recurring patterns.',
+        url: `${base}journal/`
+      }
+    },
+    featured: {
+      name: 'Trend Momentum Pro',
+      platform: 'TradingView',
+      platforms: ['TradingView', 'MetaTrader 4', 'MetaTrader 5', 'cTrader'],
+      image: `${base}images/indicator-placeholder.svg`,
+      url: `${base}products/`
+    },
+    indicators: [
+      {name:'Trend Momentum Pro', platform:'TradingView', access:'Free', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.8', reviews:'243'},
+      {name:'Smart Money Tracker', platform:'MetaTrader 5', access:'Premium', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.7', reviews:'189'},
+      {name:'Adaptive Scalper', platform:'cTrader', access:'Premium', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.6', reviews:'156'},
+      {name:'Volatility Breakout', platform:'MetaTrader 4', access:'Free', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.5', reviews:'132'},
+      {name:'Session Edge', platform:'MetaTrader 5', access:'Premium', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.7', reviews:'96'},
+      {name:'Momentum Structure', platform:'TradingView', access:'Free', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.6', reviews:'88'},
+      {name:'Precision Entry', platform:'cTrader', access:'Premium', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.8', reviews:'74'},
+      {name:'Trend Range Mapper', platform:'MetaTrader 4', access:'Free', image:`${base}images/indicator-placeholder.svg`, url:`${base}products/`, rating:'4.4', reviews:'61'}
+    ],
+    cta: {
+      title: 'Ready to Take Your Trading to the Next Level?',
+      description: 'Join traders using Trade Avata to make better decisions and build a more consistent process.',
+      image: '',
+      url: `${base}login/`,
+      stats: {traders:'50K+', countries:'120+', uptime:'99.8%', support:'24/7'}
+    }
+  };
+
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const resolve = (url) => {
+    if (!url) return '';
+    if (/^(https?:|data:|blob:|#)/i.test(url)) return url;
+    return `${base}${String(url).replace(/^\/+/, '')}`;
+  };
+
+  function setText(selector, value) {
+    const node = document.querySelector(selector);
+    if (node && value !== undefined && value !== null) node.textContent = value;
+  }
+  function setLink(selector, label, url) {
+    const node = document.querySelector(selector);
+    if (!node) return;
+    if (label) node.firstChild?.replaceWith(document.createTextNode(label));
+    if (url) node.setAttribute('href', resolve(url));
+  }
+
+  function renderIndicators(items) {
+    const grid = document.querySelector('[data-indicator-grid]');
+    if (!grid) return;
+    grid.innerHTML = items.map(item => `
+      <article class="ta-indicator-card" data-platform="${esc(item.platform)}">
+        <div class="ta-indicator-media">
+          <img src="${esc(resolve(item.image || `${base}images/indicator-placeholder.svg`))}" alt="${esc(item.name || 'Trade Avata indicator')}" loading="lazy" decoding="async" />
+          <span class="ta-platform-badge">${esc(item.platform || 'Platform')}</span>
+          <span class="ta-access-badge">${esc(item.access || 'Available')}</span>
+        </div>
+        <div class="ta-indicator-body">
+          <h3>${esc(item.name || 'Trade Avata Indicator')}</h3>
+          <div class="ta-indicator-meta"><span>★ ${esc(item.rating || '—')} (${esc(item.reviews || '0')})</span><span>${esc(item.platform || '')}</span></div>
+          <a class="ta-button ta-button-small" href="${esc(resolve(item.url || `${base}products/`))}">View Details →</a>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  function wireFilters(items) {
+    const buttons = [...document.querySelectorAll('[data-filter]')];
+    const apply = (filter) => {
+      buttons.forEach(button => {
+        const active = button.dataset.filter === filter;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-selected', String(active));
+      });
+      const shown = filter === 'all' ? items : items.filter(item => item.platform === filter);
+      renderIndicators(shown);
+    };
+    buttons.forEach(button => button.addEventListener('click', () => apply(button.dataset.filter)));
+    apply('all');
+  }
+
+  function applyContent(content) {
+    const data = {
+      hero: {...fallback.hero, ...(content?.hero || {})},
+      ai: {
+        analytics: {...fallback.ai.analytics, ...(content?.ai?.analytics || {})},
+        journal: {...fallback.ai.journal, ...(content?.ai?.journal || {})}
+      },
+      featured: {...fallback.featured, ...(content?.featured || {})},
+      indicators: Array.isArray(content?.indicators) ? content.indicators.slice(0,8) : fallback.indicators,
+      cta: {...fallback.cta, ...(content?.cta || {})}
+    };
+
+    setText('[data-hero-eyebrow]', data.hero.eyebrow);
+    setText('[data-hero-title-1]', data.hero.title1);
+    setText('[data-hero-title-2]', data.hero.title2);
+    setText('[data-hero-description]', data.hero.description);
+    const heroImage = document.querySelector('[data-hero-image]');
+    if (heroImage && data.hero.image) heroImage.src = resolve(data.hero.image);
+    setText('[data-hero-insight]', data.hero.insight);
+    setLink('[data-hero-insight-link]', 'View Analysis →', data.hero.insightLink);
+    setLink('[data-hero-primary]', `${data.hero.primaryLabel || 'Get Started Free'} →`, data.hero.primaryUrl);
+    setLink('[data-hero-secondary]', data.hero.secondaryLabel || 'Explore Platform', data.hero.secondaryUrl);
+
+    for (const key of ['analytics','journal']) {
+      setText(`[data-ai-title="${key}"]`, data.ai[key].title);
+      setText(`[data-ai-subtitle="${key}"]`, data.ai[key].subtitle);
+      setText(`[data-ai-description="${key}"]`, data.ai[key].description);
+      setLink(`[data-ai-link="${key}"]`, key === 'analytics' ? 'Try AI Analytics Free →' : 'Start AI Journal Free →', data.ai[key].url);
+    }
+
+    setText('[data-featured-name]', data.featured.name);
+    setText('[data-featured-platform]', data.featured.platform);
+    const fp = document.querySelector('[data-featured-platforms]');
+    if (fp) fp.innerHTML = (data.featured.platforms || []).map(x => `<span>${esc(x)}</span>`).join('');
+    const fi = document.querySelector('[data-featured-image]');
+    if (fi && data.featured.image) fi.src = resolve(data.featured.image);
+    setLink('[data-featured-link]', 'View Details →', data.featured.url);
+
+    setText('[data-cta-title]', data.cta.title);
+    setText('[data-cta-description]', data.cta.description);
+    setLink('[data-cta-link]', 'Get Started Free →', data.cta.url);
+    for (const key of ['traders','countries','uptime','support']) setText(`[data-stat="${key}"]`, data.cta.stats?.[key] || fallback.cta.stats[key]);
+    const ctaBg = document.querySelector('[data-cta-bg]');
+    if (ctaBg && data.cta.image) ctaBg.style.backgroundImage = `url("${resolve(data.cta.image)}")`;
+
+    renderIndicators(data.indicators);
+    wireFilters(data.indicators);
+  }
+
+  applyContent(fallback);
+  loadHomepageContent().then(remote => {
+    if (remote) applyContent(remote);
+  }).catch(() => {});
+</script>

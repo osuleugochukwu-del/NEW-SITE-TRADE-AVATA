@@ -1,0 +1,37 @@
+TRADE AVATA — FINAL SINGLE-UPLOAD MANIFEST
+
+This is one complete source package intended to be uploaded to one GitHub repository root.
+
+Included:
+- Astro public website
+- Landing/homepage
+- Learn, Trade, Tools, Market, Products, Store
+- AI Analytics
+- AI Journal
+- My Trading
+- Copy Trading private/test/live architecture
+- Prop Firm area
+- Login/Register
+- Member area
+- Admin managers
+- Firebase client/backend integration structure
+- Cloud Functions source
+- Firestore and Storage rules/indexes
+- Email/communication backend structure
+- PWA assets for My Trading
+- Trade Avata branding/logo
+- GitHub Pages deployment workflow
+
+Routing protections:
+- Internal public links use import.meta.env.BASE_URL or are resolved through the homepage URL resolver.
+- Missing navigation targets that existed in the footer have been added: /member/ and /legal/risk-disclosure/.
+- Analytics is an internal Trade Avata route, not Google Analytics.
+- My Trading links are project-base aware.
+- The corrected Trade Avata logo is included in public/brand/.
+
+Security:
+- No service-account credentials or private secrets are included.
+- Configure Firebase/other secrets through secure deployment settings.
+- Live broker execution is not enabled merely by this source package.
+
+Upload the CONTENTS of this directory to the repository root. Do not create layer folders.

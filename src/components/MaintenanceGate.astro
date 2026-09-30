@@ -1,0 +1,13 @@
+<script type="module">
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { firebaseApp } from '../lib/firebase/config.js';
+const base=document.body?.dataset?.baseUrl||'/';
+async function check(){
+ if(!firebaseApp)return;
+ try{const db=getFirestore(firebaseApp),auth=getAuth(firebaseApp);const s=await getDoc(doc(db,'siteSettings','global'));if(!s.exists()||!s.data().maintenanceMode)return;
+ const allowAdmin=s.data().allowAdminAccess!==false,allowTester=s.data().allowTesterAccess!==false;
+ onAuthStateChanged(auth,async u=>{let allowed=false;if(u){const r=await getDoc(doc(db,'roles',u.uid));const d=r.exists()?r.data():{};allowed=(allowAdmin&&['superAdmin','admin','staff'].includes(d.role))||(allowTester&&['copyTradingTester'].includes(d.role)||d.permissions?.includes?.('maintenance.bypass'));}if(!allowed)location.href=base+'maintenance/';});
+ }catch(e){}
+}check();
+</script>

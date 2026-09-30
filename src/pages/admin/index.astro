@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Trade Avata Admin" description="Trade Avata administration.">
+  <section class="section"><div class="shell"><span class="eyebrow">ADMINISTRATION</span><h1 class="page-title">Trade Avata Control Centre</h1><p class="lead">Authorized staff can manage homepage content, learning, advertising, support, email, maintenance and Copy Trading controls.</p><div class="grid grid-3" style="margin-top:32px">
+    <a class="card card-link" href={`${base}admin/homepage/`}><h3>Homepage Manager</h3><p>Homepage sections, indicators and media.</p></a>
+    <a class="card card-link" href={`${base}admin/learn/`}><h3>Learning Manager</h3><p>Courses, modules and lessons.</p></a>
+    <a class="card card-link" href={`${base}admin/ads/`}><h3>Advertising Manager</h3><p>Controlled ad placements.</p></a>
+    <a class="card card-link" href={`${base}admin/support/`}><h3>Support Inbox</h3><p>Visitor support conversations.</p></a>
+    <a class="card card-link" href={`${base}admin/email/`}><h3>Email Centre</h3><p>Templates and queued campaigns.</p></a>
+    <a class="card card-link" href={`${base}admin/email-settings/`}><h3>Email Settings</h3><p>Addresses, URLs and provider status.</p></a>
+    <a class="card card-link" href={`${base}admin/maintenance/`}><h3>Maintenance</h3><p>Global and feature maintenance controls.</p></a>
+    <a class="card card-link" href={`${base}admin/copy-trading/`}><h3>Copy Trading</h3><p>Private testing and module controls.</p></a>
+  </div></div></section>
+</BaseLayout>

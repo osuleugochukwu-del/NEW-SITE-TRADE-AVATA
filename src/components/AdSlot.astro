@@ -1,0 +1,15 @@
+---
+const { slot = '', label = 'Advertisement' } = Astro.props;
+---
+{slot ? (
+  <aside class="ad-slot" data-ad-slot={slot} aria-label={label}>
+    <span class="ad-label">{label}</span>
+    <div class="ad-placeholder">Ad space</div>
+  </aside>
+) : null}
+<style>
+  .ad-slot{width:min(100%,320px);min-height:50px;margin:14px 0 0 auto;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--panel) 92%,transparent);box-sizing:border-box;overflow:hidden}
+  .ad-label{display:block;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .ad-placeholder{min-height:36px;display:grid;place-items:center;font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--bg) 65%,transparent);border-radius:7px}
+  @media(max-width:640px){.ad-slot{width:min(100%,300px);margin-left:auto;margin-right:0}}
+</style>

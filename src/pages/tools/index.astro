@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+const tools = [
+  ['Pip Calculator', 'Calculate pip value for a selected instrument, account currency and trade setup.', `${base}tools/pip-calculator/`],
+  ['Position Size Calculator', 'Calculate the position size or lot size from account risk and stop-loss distance.', `${base}tools/position-size/`],
+  ['AI Analytics', 'Turn your trading records into evidence-backed performance, risk and behaviour analysis.', `${base}analytics/`],
+  ['Trading Journal', 'Plan, record, review and investigate your trading decisions and execution in one place.', `${base}journal/`]
+];
+---
+<BaseLayout title="Tools — Trade Avata" description="Focused Trade Avata tools: pip calculation, position sizing, AI Analytics and Trading Journal.">
+  <section class="section">
+    <div class="shell">
+      <span class="eyebrow">Tools</span>
+      <h1 class="page-title">Powerful tools. Nothing unnecessary.</h1>
+      <p class="lead">Trade Avata keeps the toolkit focused on the tools that directly support your trading journey.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell grid grid-4">
+      {tools.map(([title, desc, href]) => (
+        <a class="card card-link" href={href}>
+          <div class="icon">+</div>
+          <h3>{title}</h3>
+          <p>{desc}</p>
+          <span style="display:block;margin-top:18px;color:var(--sky);font-size:13px;font-weight:750">Open tool →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

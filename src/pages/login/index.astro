@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Sign in — Trade Avata" description="Sign in to Trade Avata.">
+  <section class="section"><div class="shell" style="max-width:560px"><span class="eyebrow">ACCOUNT</span><h1 class="page-title">Sign in</h1><p class="lead">Access your Trade Avata account, analytics, journal and member features.</p><form id="loginForm" class="card" style="margin-top:28px;display:grid;gap:14px"><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Password<input name="password" type="password" autocomplete="current-password" required /></label><button class="button" type="submit">Sign in</button><p id="loginStatus" class="lead" style="font-size:14px;margin:0"></p><a class="text-link" href={`${base}register/`}>Create an account →</a></form></div></section>
+<script>
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebase/auth.js';
+const form=document.querySelector('#loginForm'); const status=document.querySelector('#loginStatus');
+form?.addEventListener('submit',async e=>{e.preventDefault(); if(!auth){status.textContent='Firebase authentication is not configured yet.';return;} const f=new FormData(form); status.textContent='Signing in…'; try{await signInWithEmailAndPassword(auth,String(f.get('email')),String(f.get('password'))); location.href='/';}catch(err){status.textContent=err?.message||'Sign-in failed.';}});
+</script>
+</BaseLayout>

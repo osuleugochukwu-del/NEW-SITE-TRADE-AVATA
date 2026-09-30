@@ -1,0 +1,48 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SupportChat from '../components/SupportChat.astro';
+import MaintenanceGate from '../components/MaintenanceGate.astro';
+import '../styles/site.css';
+
+const { title = 'Trade Avata', description = 'Your Trading Journey Starts Here.' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href={`${base}brand/trade-avata-logo.svg`} />
+    <script is:inline data-theme-init>
+      try {
+        const savedTheme = localStorage.getItem('ta-theme');
+        document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+      } catch {}
+    </script>
+  </head>
+  <body data-base-url={base}>
+    <Header />
+    <main><slot /></main>
+    <Footer />
+    <SupportChat />
+    <MaintenanceGate />
+    <script is:inline>
+      const themeButton = document.querySelector('[data-theme-toggle]');
+      themeButton?.addEventListener('click', () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        try { localStorage.setItem('ta-theme', next); } catch {}
+      });
+      const menuButton = document.querySelector('[data-menu-toggle]');
+      const menu = document.querySelector('[data-mobile-menu]');
+      menuButton?.addEventListener('click', () => {
+        const open = menu?.classList.toggle('is-open');
+        menuButton?.setAttribute('aria-expanded', String(Boolean(open)));
+      });
+    </script>
+  </body>
+</html>

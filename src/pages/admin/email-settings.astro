@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Email Settings — Trade Avata" description="Configure Trade Avata email behaviour without storing provider secrets in Firestore.">
+<main class="email-settings"><header><div><span class="eyebrow">ADMIN</span><h1>Email Settings</h1><p>Configure addresses, URLs and notification behaviour. Provider secrets stay on the server.</p></div><a href="./">Admin dashboard</a></header>
+<section class="card"><form data-form>
+<label>Provider<select name="provider"><option value="none">Not connected yet</option><option value="smtp">SMTP</option><option value="resend">Resend</option></select></label>
+<label>From name<input name="fromName" placeholder="Trade Avata"></label>
+<label>From email<input name="fromEmail" placeholder="Do not add a domain until purchased"></label>
+<label>Reply-to<input name="replyTo" placeholder="Optional"></label>
+<label>Support email<input name="supportEmail" placeholder="Optional"></label>
+<label>Admin notification email<input name="adminEmail" placeholder="Optional"></label>
+<label>Website URL<input name="appUrl" placeholder="https://your-domain.example"></label>
+<label>Transactional emails enabled<select name="enabled"><option value="false">No — keep queue-only</option><option value="true">Yes</option></select></label>
+<label>Dry-run mode<select name="dryRun"><option value="true">Yes — do not send</option><option value="false">No</option></select></label>
+<div class="note"><strong>Security:</strong> SMTP passwords, API keys and other provider credentials are never stored here. They belong in server-side environment/secrets when a provider is connected.</div><div class="actions"><button type="submit">Save settings</button><button type="button" data-test>Check configuration</button></div><p data-status></p></form></section>
+</main>
+<script>
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { watchAuth } from '../../lib/firebase/auth.js';
+import { db } from '../../lib/firebase/db.js';
+import { getAdminRole, writeAdminAudit } from '../../lib/firebase/admin.js';
+const form=document.querySelector('[data-form]'),status=document.querySelector('[data-status]');
+const fields=['provider','fromName','fromEmail','replyTo','supportEmail','adminEmail','appUrl','enabled','dryRun'];
+const set=(data={})=>fields.forEach(k=>{if(form.elements[k]) form.elements[k].value=data[k] ?? (k==='provider'?'none':k==='enabled'||k==='dryRun'?'true':'')});
+async function load(){const s=await getDoc(doc(db,'siteSettings','email'));set(s.exists()?s.data():{});}
+form.addEventListener('submit',async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(form));v.enabled=v.enabled==='true';v.dryRun=v.dryRun==='true';await setDoc(doc(db,'siteSettings','email'),{...v,updatedAt:serverTimestamp()},{merge:true});await writeAdminAudit({actorId,action:'save',target:'emailSettings'});status.textContent='Saved. Provider secrets are not stored in Firestore.';});
+document.querySelector('[data-test]').addEventListener('click',()=>{status.textContent='Configuration UI is ready. Actual sending remains queue-only until a server provider is configured.';});
+let actorId='';watchAuth(async u=>{if(!u){status.textContent='Sign in required.';return;}actorId=u.uid;const role=await getAdminRole(u.uid);if(!role){status.textContent='Administrator access required.';return;}await load();});
+</script>
+<style>
+.email-settings{max-width:900px;margin:0 auto;padding:48px 20px}.email-settings header{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:24px}.email-settings header a{padding:10px 14px;border:1px solid #35516e;border-radius:10px}.card{background:#071426;border:1px solid #29445f;border-radius:18px;padding:22px}.email-settings label{display:block;margin:0 0 15px}.email-settings input,.email-settings select{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:11px;border:1px solid #35516e;background:#091b2e;color:#fff;border-radius:10px}.note{padding:14px;border:1px solid #35516e;border-radius:12px;color:#a9bfd3;background:#081a2c;margin:18px 0}.actions{display:flex;gap:10px}.actions button{border:0;border-radius:10px;padding:10px 14px;background:#0b73ff;color:#fff;font-weight:700}.email-settings p{color:#8ea6bc}
+@media(max-width:700px){.email-settings header{flex-direction:column;align-items:start}}
+</style>
+</BaseLayout>

@@ -1,0 +1,644 @@
+---
+import { demoAccount, accounts, trades, monthly, symbols, strategies, sessions, weekday, equity } from '../lib/analytics/demo.js';
+import { buildAIAnalyticsEvidence, getAIAnalyticsPrompt, requestAIAnalytics } from '../lib/analytics/ai.js';
+import '../styles/analytics.css';
+
+const base = import.meta.env.BASE_URL;
+const json = (value) => JSON.stringify(value);
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Trade Avata Analytics — account performance, risk intelligence and AI-powered trading analysis." />
+  <title>Analytics | Trade Avata</title>
+  <link rel="icon" type="image/png" href={`${base}brand/trade-avata-logo.svg`} />
+</head>
+<body class="analytics-body">
+  <div class="ta-shell" id="analyticsApp">
+    <aside class="ta-sidebar" id="sidebar">
+      <a class="ta-brand" href={base} aria-label="Trade Avata home">
+        <img src={`${base}brand/trade-avata-logo.svg`} alt="" />
+        <span><b>Trade Avata</b><small>Analytics</small></span>
+      </a>
+      <div class="side-kicker">MY TRADING</div>
+      <nav class="ta-nav" aria-label="Analytics navigation">
+        {[
+          ['dashboard','Dashboard','⌂'],['performance','Performance','↗'],['trades','Trades','▤'],
+          ['calendar','Calendar','□'],['strategies','Strategies','◆'],['risk','Risk','△'],
+          ['comparisons','Comparisons','⇄'],['bookkeeping','Bookkeeping','₦'],['insights','Insights','✦'],['ai-analytics','AI Analytics','AI'],
+          ['reports','Reports','▥'],['downloads','Downloads','⇩'],['accounts','Accounts','◉']
+        ].map(([id,label,icon]) => <button class="nav-link" data-view={id}><i>{icon}</i><span>{label}</span></button>)}
+      </nav>
+      <div class="side-bottom">
+        <button class="nav-link" data-open-customize><i>⚙</i><span>Customize dashboard</span></button>
+        <a class="back-site" href={base}>← Back to Trade Avata</a>
+      </div>
+    </aside>
+
+    <main class="ta-main">
+      <header class="ta-topbar">
+        <div class="mobile-brand">
+          <button class="icon-btn" id="mobileMenu" aria-label="Open navigation">☰</button>
+          <a href={base}><img src={`${base}brand/trade-avata-logo.svg`} alt="" /><b>Trade Avata</b></a>
+        </div>
+        <div class="account-header">
+          <button class="account-picker" id="accountPicker" aria-haspopup="dialog">
+            <span class="status-dot"></span>
+            <span class="account-picker-copy"><b id="accountName">Primary Trading Account</b><small id="accountMeta">DEMO · MetaTrader 5 · USD</small></span>
+            <span class="chevron">⌄</span>
+          </button>
+          <span class="sync-state" id="syncState">Demo workspace</span>
+        </div>
+        <div class="top-actions">
+          <button class="ghost-btn" id="syncBtn">↻ <span>Sync</span></button>
+          <button class="primary-btn" id="connectBtn">＋ Connect Account</button>
+          <button class="icon-btn" id="topMore" aria-label="More actions">⋯</button>
+        </div>
+      </header>
+
+      <div class="mobile-nav-strip">
+        {['dashboard','performance','trades','calendar','strategies','risk','comparisons','insights','ai-analytics','reports','downloads','accounts'].map(id => <button data-view={id}>{id === 'dashboard' ? 'Home' : id[0].toUpperCase()+id.slice(1)}</button>)}
+      </div>
+
+      <div class="ta-content">
+        <!-- DASHBOARD -->
+        <section class="ta-view active" data-panel="dashboard">
+          <div class="page-heading">
+            <div><span class="eyebrow">ANALYTICS</span><h1>Trading Dashboard</h1><p>What happened, when it happened, and where the results came from.</p></div>
+            <div class="heading-actions"><button class="ghost-btn" id="customizeBtn">⚙ Customize</button><button class="period-btn" id="periodBtn">Last 90 days <span>⌄</span></button></div>
+          </div>
+
+          <div class="filter-bar" id="filterBar">
+            <button class="filter-chip active">Account: <b id="filterAccount">Primary</b></button>
+            <button class="filter-chip">Period: <b>Last 90 days</b></button>
+            <button class="filter-chip">Symbol: <b>All</b></button>
+            <button class="filter-chip">Direction: <b>All</b></button>
+            <button class="filter-chip">Strategy: <b>All</b></button>
+            <button class="filter-chip">Session: <b>All</b></button>
+            <button class="filter-chip">Result: <b>All</b></button>
+            <button class="filter-more" id="filterMore">＋ More filters</button>
+          </div>
+
+          <div class="dashboard-canvas" id="dashboardCanvas">
+          <div class="kpi-strip" data-widget="kpis">
+            <article class="kpi-card"><span>Equity</span><strong id="kpiEquity">$12,846.20</strong><em class="positive">+4.82% vs prior period</em></article>
+            <article class="kpi-card"><span>Net P&amp;L</span><strong id="kpiPnl">+$2,846.20</strong><em class="positive">+28.46% return</em></article>
+            <article class="kpi-card"><span>Win Rate</span><strong id="kpiWin">64.2%</strong><em>206 wins · 115 losses</em></article>
+            <article class="kpi-card"><span>Profit Factor</span><strong id="kpiPf">1.84</strong><em>Gross profit / gross loss</em></article>
+            <article class="kpi-card"><span>Max Drawdown</span><strong id="kpiDd">-8.7%</strong><em class="negative">$1,184.30</em></article>
+            <article class="kpi-card"><span>Total Trades</span><strong id="kpiTrades">321</strong><em>+18 vs prior period</em></article>
+            <article class="kpi-card"><span>Average R</span><strong>+0.42R</strong><em>Risk-adjusted trade result</em></article>
+          </div>
+
+          <div class="grid-main">
+            <article class="panel widget" data-widget="equity">
+              <div class="panel-head">
+                <div><span class="panel-kicker">ACCOUNT GROWTH</span><h2>Equity &amp; Balance</h2><p>Track account growth, drawdown and cumulative results.</p></div>
+                <div class="chart-tools"><button class="chart-tab active" data-chart="equity">Equity</button><button class="chart-tab" data-chart="balance">Balance</button><button class="chart-tab" data-chart="pnl">P&amp;L</button><button class="chart-tab" data-chart="drawdown">Drawdown</button></div>
+              </div>
+              <div class="chart-range"><button>1W</button><button class="active">1M</button><button>3M</button><button>6M</button><button>1Y</button><button>ALL</button></div>
+              <div class="chart-scroll"><div class="line-chart" id="equityChart" aria-label="Equity curve chart"></div></div>
+              <div class="chart-footer"><span>Start <b>$10,000</b></span><span>Current <b>$12,846</b></span><span>Peak <b>$13,112</b></span><span>Drawdown <b class="negative">-8.7%</b></span></div>
+            </article>
+
+            <article class="panel widget" data-widget="overview">
+              <div class="panel-head"><div><span class="panel-kicker">ACCOUNT</span><h2>Account Overview</h2><p>Source-derived identity and connection state.</p></div><button class="mini-btn" id="accountDetails">Details</button></div>
+              <div class="identity-box"><div class="identity-avatar">TA</div><div><b id="overviewName">Primary Trading Account</b><span id="overviewOwner">Demo Workspace</span></div><span class="source-badge">SOURCE STATUS</span></div>
+              <div class="overview-grid">
+                <div><span>Environment</span><b id="overviewEnv">DEMO</b></div><div><span>Platform</span><b id="overviewPlatform">MetaTrader 5</b></div>
+                <div><span>Broker</span><b id="overviewBroker">Example Broker</b></div><div><span>Currency</span><b id="overviewCurrency">USD</b></div>
+                <div><span>Account</span><b id="overviewLogin">•••• 4821</b></div><div><span>Leverage</span><b id="overviewLeverage">1:100</b></div>
+              </div>
+              <div class="connection-note"><span class="status-dot"></span><span id="connectionText">Demo data is being displayed. No live broker connection is active.</span></div>
+            </article>
+          </div>
+
+          <div class="grid-main">
+            <article class="panel widget" data-widget="comparison">
+              <div class="panel-head"><div><span class="panel-kicker">HISTORICAL COMPARISON</span><h2>How This Period Compares</h2><p>Make changes visible by comparing the same metrics across periods.</p></div><button class="text-link" data-view="comparisons">Open comparison →</button></div>
+              <div class="comparison-table-wrap"><table class="data-table compact"><thead><tr><th>Metric</th><th>Current</th><th>Prior Period</th><th>Change</th><th>Previous Year</th></tr></thead><tbody>
+                <tr><td>P&amp;L</td><td>+$2,846</td><td>+$2,318</td><td class="positive">+22.8%</td><td>+$3,104</td></tr>
+                <tr><td>Return</td><td>28.46%</td><td>23.18%</td><td class="positive">+5.28 pp</td><td>31.04%</td></tr>
+                <tr><td>Win Rate</td><td>64.2%</td><td>61.8%</td><td class="positive">+2.4 pp</td><td>67.1%</td></tr>
+                <tr><td>Profit Factor</td><td>1.84</td><td>1.62</td><td class="positive">+0.22</td><td>1.97</td></tr>
+                <tr><td>Trades</td><td>321</td><td>303</td><td>+18</td><td>286</td></tr>
+                <tr><td>Max Drawdown</td><td>-8.7%</td><td>-7.4%</td><td class="negative">-1.3 pp</td><td>-6.9%</td></tr>
+                <tr><td>Avg Holding</td><td>58m</td><td>64m</td><td class="positive">-6m</td><td>52m</td></tr>
+              </tbody></table></div>
+            </article>
+            <article class="panel widget" data-widget="distribution">
+              <div class="panel-head"><div><span class="panel-kicker">TRADE DISTRIBUTION</span><h2>Wins vs Losses</h2><p>Understand the shape behind the headline win rate.</p></div></div>
+              <div class="distribution">
+                <div class="donut" style="--value:64.2"><div><b>64.2%</b><span>Win rate</span></div></div>
+                <div class="dist-list"><div><span><i class="dot win"></i>Winning trades</span><b>206</b></div><div><span><i class="dot loss"></i>Losing trades</span><b>115</b></div><div><span>Avg win</span><b>+$126.40</b></div><div><span>Avg loss</span><b>-$74.10</b></div><div><span>Expectancy</span><b>+$24.80</b></div></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid-2">
+            <article class="panel widget" data-widget="monthly">
+              <div class="panel-head"><div><span class="panel-kicker">PERIOD PERFORMANCE</span><h2>Monthly Performance</h2><p>See the pattern across months, not just the latest result.</p></div><button class="text-link" data-view="performance">Open performance →</button></div>
+              <div class="bar-chart" id="monthlyChart"></div>
+              <div class="mini-table"><div><span>Best month</span><b>Jul 2026 · +$742</b></div><div><span>Lowest month</span><b>Sep 2026 · +$278</b></div></div>
+            </article>
+            <article class="panel widget" data-widget="symbols">
+              <div class="panel-head"><div><span class="panel-kicker">MARKET CONTRIBUTION</span><h2>Symbol Performance</h2><p>Which instruments contributed to the account result?</p></div><button class="text-link" data-view="trades">Drill down →</button></div>
+              <div class="rank-list">{symbols.map(([s,pf,profit,wr]) => <div class="rank-row"><span class="rank-name">{s}</span><span class="rank-bar"><i style={`width:${Math.min(100,Math.max(8,pf/700*100))}%`}></i></span><b>+${pf}</b><small>{wr}% win</small></div>)}</div>
+            </article>
+          </div>
+
+          <div class="grid-2">
+            <article class="panel widget" data-widget="sessions">
+              <div class="panel-head"><div><span class="panel-kicker">TIME ANALYSIS</span><h2>Sessions &amp; Days</h2><p>Find how performance changes by trading window.</p></div><button class="text-link" data-view="comparisons">Open analysis →</button></div>
+              <div class="session-grid">{sessions.map(([name,pf,profit,wr]) => <div class="session-card"><span>{name}</span><b>+${pf}</b><small>PF {profit} · {wr}% win</small></div>)}</div>
+              <div class="weekday-row">{weekday.map(([d,p,pf,wr]) => <div><span>{d}</span><i style={`height:${Math.max(18,wr)}%`}></i><b>+${p}</b></div>)}</div>
+            </article>
+            <article class="panel widget" data-widget="insights">
+              <div class="panel-head"><div><span class="panel-kicker">TRADE AVATA INSIGHTS</span><h2>What Matters Now</h2><p>Observations from recorded data, not diagnoses or guarantees.</p></div><button class="text-link" data-view="insights">View all →</button></div>
+              <div class="insight-stack">
+                <button class="insight-row" data-drill="drawdown"><span>↘</span><div><b>Drawdown is elevated vs the prior period</b><small>Current maximum: 8.7% · prior period: 7.4%</small></div><em>→</em></button>
+                <button class="insight-row" data-drill="symbol"><span>◈</span><div><b>XAUUSD accounts for a large share of recent losses</b><small>Recent sample shows higher loss concentration than EURUSD.</small></div><em>→</em></button>
+                <button class="insight-row" data-drill="size"><span>↗</span><div><b>Average position size is above your recent baseline</b><small>Review the trade-level size distribution for the selected period.</small></div><em>→</em></button>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel widget" data-widget="recent">
+            <div class="panel-head"><div><span class="panel-kicker">EXECUTION</span><h2>Recent Trades</h2><p>Move from a chart to the exact trades that created it.</p></div><button class="text-link" data-view="trades">View all trades →</button></div>
+            <div class="table-scroll"><table class="data-table"><thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>Volume</th><th>Entry</th><th>Exit</th><th>P&amp;L</th><th>Strategy</th><th>Session</th><th>Hold</th></tr></thead><tbody id="recentTradesBody"></tbody></table></div>
+          </article>
+          </div>
+        </section>
+
+        <!-- PERFORMANCE -->
+        <section class="ta-view" data-panel="performance">
+          <div class="page-heading"><div><span class="eyebrow">PERFORMANCE</span><h1>Performance Analysis</h1><p>Financial performance with period comparisons and drill-downs.</p></div><div class="heading-actions"><button class="ghost-btn" data-export="performance-pdf">⇩ PDF</button><button class="primary-btn" data-export="performance-xlsx">⇩ Spreadsheet</button></div></div>
+          <div class="kpi-strip"><article class="kpi-card"><span>Net P&amp;L</span><strong>+$2,846.20</strong><em class="positive">28.46% return</em></article><article class="kpi-card"><span>Gross Profit</span><strong>+$5,940.80</strong><em>247 winning trades gross</em></article><article class="kpi-card"><span>Gross Loss</span><strong>-$3,094.60</strong><em>115 losing trades gross</em></article><article class="kpi-card"><span>Expectancy</span><strong>+$24.80</strong><em>per closed trade</em></article><article class="kpi-card"><span>Avg R</span><strong>+0.42R</strong><em>per trade</em></article></div>
+          <article class="panel"><div class="panel-head"><div><span class="panel-kicker">EQUITY / BALANCE</span><h2>Growth Curve</h2><p>Use the horizontal analytical canvas on mobile to preserve readability.</p></div></div><div class="chart-scroll"><div class="line-chart large" id="performanceChart"></div></div></article>
+          <div class="grid-2"><article class="panel"><div class="panel-head"><div><span class="panel-kicker">MONTHLY</span><h2>Monthly Results</h2></div></div><div class="comparison-table-wrap"><table class="data-table compact"><thead><tr><th>Month</th><th>P&amp;L</th><th>Return</th><th>PF</th><th>Trades</th><th>Avg R</th></tr></thead><tbody>{monthly.map(m=><tr><td>{m[0]}</td><td class="positive">+${m[1]}</td><td>+{m[2]}%</td><td>{m[3]}</td><td>{m[4]}</td><td>+{m[5]}R</td></tr>)}</tbody></table></div></article><article class="panel"><div class="panel-head"><div><span class="panel-kicker">DRAWDOWN</span><h2>Drawdown Profile</h2></div></div><div class="risk-summary"><div><span>Maximum</span><b class="negative">-8.7%</b><small>$1,184.30</small></div><div><span>Average</span><b>-2.4%</b><small>Across observed periods</small></div><div><span>Recovery</span><b>11 days</b><small>Peak-to-recovery median</small></div></div><div class="risk-meter"><i style="width:43%"></i><span>Current drawdown zone</span></div></article></div>
+        </section>
+
+        <!-- TRADES -->
+        <section class="ta-view" data-panel="trades">
+          <div class="page-heading"><div><span class="eyebrow">TRADE BOOK</span><h1>Trades</h1><p>Search, filter and investigate every recorded execution.</p></div><div class="heading-actions"><button class="ghost-btn" data-export="trades-pdf">⇩ PDF</button><button class="primary-btn" data-export="trades-xlsx">⇩ Spreadsheet</button></div></div>
+          <div class="trade-filter-panel"><input id="tradeSearch" placeholder="Search symbol, strategy, session…" /><select id="sideFilter"><option value="">All directions</option><option>BUY</option><option>SELL</option></select><select id="resultFilter"><option value="">All results</option><option value="win">Winners</option><option value="loss">Losers</option></select><select id="strategyFilter"><option value="">All strategies</option><option>Breakout</option><option>Pullback</option><option>Trend</option><option>Reversal</option></select><button class="ghost-btn" id="clearFilters">Clear</button></div>
+          <article class="panel"><div class="table-scroll"><table class="data-table trade-table"><thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>Volume</th><th>Entry</th><th>Exit</th><th>Pips/R</th><th>MAE</th><th>P&amp;L</th><th>Strategy</th><th>Session</th><th>Day</th><th>Hold</th></tr></thead><tbody id="allTradesBody"></tbody></table></div><div class="table-foot"><span id="tradeCount">15 of 321 shown</span><button class="text-link">Load more</button></div></article>
+        </section>
+
+        <!-- CALENDAR -->
+        <section class="ta-view" data-panel="calendar">
+          <div class="page-heading"><div><span class="eyebrow">TIME ANALYSIS</span><h1>Trading Calendar</h1><p>Click a day to move from daily performance into its exact trades.</p></div><div class="heading-actions"><button class="ghost-btn" data-export="calendar-pdf">⇩ PDF</button><button class="primary-btn" data-export="calendar-xlsx">⇩ Spreadsheet</button></div></div>
+          <div class="calendar-layout"><article class="panel calendar-panel"><div class="calendar-header"><button class="icon-btn">‹</button><div><span>2026</span><h2>September</h2></div><button class="icon-btn">›</button></div><div class="calendar-grid"><b>Mon</b><b>Tue</b><b>Wed</b><b>Thu</b><b>Fri</b><b>Sat</b><b>Sun</b>{Array.from({length:35},(_,i)=>{const day=i-0; const weekend=i%7>4; const loss=i%9===0; return <button class={`day-cell ${weekend?'muted-day':''} ${loss?'loss-day':'win-day'}`} data-day={day+1}><span>{day+1}</span><b>{weekend?'—':loss?'-$86':i%4===0?'+$182':'+$64'}</b><small>{weekend?'':`${(i%4)+1} trades`}</small></button>})}</div></article><article class="panel day-detail" id="dayDetail"><span class="panel-kicker">DAY DETAIL</span><h2>Select a trading day</h2><p>Choose a date to see its P&amp;L, trades, symbols and sessions.</p></article></div>
+        </section>
+
+        <!-- STRATEGIES -->
+        <section class="ta-view" data-panel="strategies">
+          <div class="page-heading"><div><span class="eyebrow">STRATEGY ANALYTICS</span><h1>Strategies</h1><p>Compare strategy tags when the connected data actually contains them.</p></div><div class="heading-actions"><button class="ghost-btn" data-export="strategies-pdf">⇩ PDF</button><button class="primary-btn" data-export="strategies-xlsx">⇩ Spreadsheet</button></div></div>
+          <div class="strategy-cards">{strategies.map(([name,pf,profit,wr,tradesCount,avgR])=><article class="strategy-card"><span>STRATEGY TAG</span><h2>{name}</h2><div class="strategy-metrics"><div><b>+${pf}</b><small>Net P&amp;L</small></div><div><b>{profit}</b><small>Profit factor</small></div><div><b>{wr}%</b><small>Win rate</small></div><div><b>{tradesCount}</b><small>Trades</small></div></div><div class="progress-line"><i style={`width:${wr}%`}></i></div><footer><span>Avg R +{avgR}R</span><button class="text-link">Drill into trades →</button></footer></article>)}</div>
+          <div class="grid-2"><article class="panel"><div class="panel-head"><div><span class="panel-kicker">STRATEGY × SYMBOL</span><h2>Where Each Setup Works</h2></div></div><div class="matrix">{strategies.slice(0,3).map(s=><div class="matrix-row"><b>{s[0]}</b><span>EURUSD <em>+${Math.round(s[1]*.35)}</em></span><span>XAUUSD <em>+${Math.round(s[1]*.29)}</em></span><span>GBPUSD <em>+${Math.round(s[1]*.21)}</em></span></div>)}</div></article><article class="panel"><div class="panel-head"><div><span class="panel-kicker">TRADE MANAGEMENT</span><h2>MFE / MAE</h2><p>Maximum favourable/adverse excursion across recorded trades.</p></div></div><div class="mfe-mae"><div><b>+1.72R</b><span>Median MFE</span></div><div><b>-0.46R</b><span>Median MAE</span></div><div><b>68%</b><span>Profit retained</span></div></div></article></div>
+        </section>
+
+        <!-- RISK -->
+        <section class="ta-view" data-panel="risk">
+          <div class="page-heading"><div><span class="eyebrow">RISK ANALYTICS</span><h1>Risk</h1><p>Understand drawdown, exposure, sizing, streaks and risk consistency.</p></div><div class="heading-actions"><button class="ghost-btn" data-export="risk-pdf">⇩ PDF</button><button class="primary-btn" data-export="risk-xlsx">⇩ Spreadsheet</button></div></div>
+          <div class="risk-grid"><article class="metric-panel"><span>Maximum Drawdown</span><b class="negative">-8.7%</b><small>$1,184.30 peak-to-trough</small></article><article class="metric-panel"><span>Longest Losing Streak</span><b>6 trades</b><small>Historical maximum</small></article><article class="metric-panel"><span>Average Risk / Trade</span><b>0.82R</b><small>From recorded trade risk</small></article><article class="metric-panel"><span>Largest Loss</span><b class="negative">-$318.50</b><small>Single closed trade</small></article><article class="metric-panel"><span>Largest Win</span><b class="positive">+$482.20</b><small>Single closed trade</small></article><article class="metric-panel"><span>Recovery Time</span><b>11 days</b><small>Median peak recovery</small></article></div>
+          <div class="grid-2"><article class="panel"><div class="panel-head"><div><span class="panel-kicker">CONSISTENCY</span><h2>Risk Consistency</h2></div></div><div class="risk-bars">{[['Position size',76],['Risk per trade',68],['Exposure',54],['Loss concentration',43],['R:R consistency',71]].map(([label,value])=><div class="risk-bar"><span>{label}</span><i><b style={`width:${value}%`}></b></i><strong>{value}%</strong></div>)}</div></article><article class="panel"><div class="panel-head"><div><span class="panel-kicker">EXPOSURE</span><h2>Instrument Concentration</h2></div></div><div class="exposure-list">{symbols.map(([s,pf,profit,wr])=><div><span>{s}</span><i><b style={`width:${Math.max(12,profit)}%`}></b></i><strong>{profit}%</strong></div>)}</div></article></div>
+        </section>
+
+        <!-- COMPARISONS -->
+        <section class="ta-view" data-panel="comparisons">
+          <div class="page-heading"><div><span class="eyebrow">CROSS ANALYSIS</span><h1>Comparisons &amp; Drill-down</h1><p>Investigate the same account across periods, symbols, sessions, days and strategies.</p></div><button class="primary-btn" id="resetDrill">Reset drill-down</button></div>
+          <div class="drill-path" id="drillPath"><button>All data</button><span>›</span><span>Choose a dimension</span></div>
+          <div class="drill-grid"><article class="drill-card" data-drill-dimension="symbol"><span>SYMBOL</span><h2>Instrument</h2><p>EURUSD, XAUUSD, GBPUSD, USDJPY, NAS100…</p><button>Explore →</button></article><article class="drill-card" data-drill-dimension="session"><span>SESSION</span><h2>Trading session</h2><p>Asia, London, New York and overlap windows.</p><button>Explore →</button></article><article class="drill-card" data-drill-dimension="weekday"><span>DAY</span><h2>Day of week</h2><p>Monday through Friday performance.</p><button>Explore →</button></article><article class="drill-card" data-drill-dimension="strategy"><span>STRATEGY</span><h2>Strategy tag</h2><p>Compare recorded strategy labels.</p><button>Explore →</button></article><article class="drill-card" data-drill-dimension="direction"><span>DIRECTION</span><h2>Long vs Short</h2><p>Separate BUY and SELL behaviour.</p><button>Explore →</button></article><article class="drill-card" data-drill-dimension="hour"><span>TIME</span><h2>Hour of day</h2><p>Find time windows with different outcomes.</p><button>Explore →</button></article></div>
+          <article class="panel"><div class="panel-head"><div><span class="panel-kicker">CURRENT SLICE</span><h2 id="sliceTitle">All recorded trades</h2><p id="sliceDescription">Start with a dimension above. Every slice can lead back to individual trades.</p></div></div><div class="slice-stats" id="sliceStats"><div><span>P&amp;L</span><b>+$2,846</b></div><div><span>Trades</span><b>321</b></div><div><span>Win rate</span><b>64.2%</b></div><div><span>Profit factor</span><b>1.84</b></div><div><span>Avg R</span><b>+0.42R</b></div></div></article>
+        </section>
+
+        <!-- BOOKKEEPING -->
+        <section class="ta-view" data-panel="bookkeeping">
+          <div class="page-heading"><div><span class="eyebrow">BOOKKEEPING</span><h1>Trading Ledger</h1><p>Keep deposits, withdrawals, fees, funding and trading results together.</p></div><div class="heading-actions"><button class="ghost-btn" data-export="bookkeeping-pdf">⇩ PDF</button><button class="primary-btn" data-export="bookkeeping-xlsx">⇩ Spreadsheet</button></div></div>
+          <div class="ledger-summary"><div><span>Opening balance</span><b>$10,000.00</b></div><div><span>Trading P&amp;L</span><b class="positive">+$3,094.60</b></div><div><span>Fees &amp; swaps</span><b class="negative">-$248.40</b></div><div><span>Current equity</span><b>$12,846.20</b></div></div>
+          <article class="panel"><div class="panel-head"><div><span class="panel-kicker">ACCOUNT LEDGER</span><h2>Financial Records</h2></div><button class="primary-btn" id="addLedger">＋ Add record</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th><th>Source</th></tr></thead><tbody><tr><td>Jul 01</td><td>Deposit</td><td>Initial funding</td><td class="positive">+$10,000</td><td>Account source</td></tr><tr><td>Sep 28</td><td>Trading P&amp;L</td><td>Closed trades</td><td class="positive">+$3,094.60</td><td>Trade sync</td></tr><tr><td>Sep 28</td><td>Fees</td><td>Commissions + swaps</td><td class="negative">-$248.40</td><td>Account source</td></tr></tbody></table></div></article>
+        </section>
+
+        <!-- INSIGHTS -->
+        <section class="ta-view" data-panel="insights">
+          <div class="page-heading"><div><span class="eyebrow">TRADE AVATA INSIGHTS</span><h1>Your Data Shows…</h1><p>Plain-language observations generated from your historical data. No diagnosis, no invented strategy tags.</p></div><div class="heading-actions"><button class="ghost-btn" data-export="insights-pdf">⇩ PDF</button><button class="primary-btn" data-export="insights-xlsx">⇩ Spreadsheet</button></div></div>
+          <div class="insight-grid-large">
+            <article class="big-insight"><span>01 · PERIOD</span><h2>Your current period is above the prior period.</h2><p>Net P&amp;L is $528 higher than the prior period while trade count is 18 trades higher.</p><button data-view="comparisons">Investigate period change →</button></article>
+            <article class="big-insight"><span>02 · SYMBOL</span><h2>Results are concentrated across a small group of instruments.</h2><p>EURUSD and XAUUSD contribute a large share of the observed sample P&amp;L.</p><button data-drill="symbol">Open symbol analysis →</button></article>
+            <article class="big-insight"><span>03 · TIME</span><h2>London is the strongest session in this sample.</h2><p>London shows the highest session P&amp;L and profit factor among recorded sessions.</p><button data-drill="session">Open session analysis →</button></article>
+            <article class="big-insight"><span>04 · MANAGEMENT</span><h2>Winning trades generally stayed open longer than losing trades.</h2><p>Median holding time and MFE/MAE can be inspected alongside individual trades.</p><button data-view="strategies">Open management analysis →</button></article>
+            <article class="big-insight"><span>05 · RISK</span><h2>Drawdown has increased relative to the prior period.</h2><p>The current maximum is 8.7% compared with 7.4% in the prior period.</p><button data-view="risk">Open risk analysis →</button></article>
+            <article class="big-insight"><span>06 · DATA QUALITY</span><h2>Insights only use dimensions available in the recorded data.</h2><p>Missing strategy tags, broker fields or account metadata are shown as unavailable rather than guessed.</p><button data-view="accounts">Review account data →</button></article>
+          </div>
+        </section>
+
+        <!-- AI ANALYTICS -->
+        <section class="ta-view" data-panel="ai-analytics">
+          <div class="page-heading">
+            <div><span class="eyebrow ai-eyebrow">TRADE AVATA AI ANALYTICS</span><h1>AI Trading Risk Intelligence</h1><p>AI examines the evidence calculated from your trading data and explains the patterns that may be contributing to drawdown, challenge losses and inconsistent risk.</p></div>
+            <div class="heading-actions"><button class="ghost-btn" id="aiScopeBtn">Review data scope</button><button class="primary-btn" id="runAIAnalysis">✦ Analyze My Account</button></div>
+          </div>
+
+          <div class="ai-hero">
+            <div class="ai-orb">AI</div>
+            <div class="ai-hero-copy"><span>TRADE AVATA AI ANALYTICS</span><h2>From trading records to understandable evidence.</h2><p>The analytics engine calculates the numbers first. AI then turns those findings into a clear investigation. It does not invent trades, diagnose you, or claim certainty where the data cannot prove the cause.</p></div>
+            <div class="ai-status"><span class="ai-status-dot"></span><b id="aiModeLabel">Evidence engine ready</b><small id="aiModeDetail">Demo workspace · provider endpoint optional</small></div>
+          </div>
+
+          <div class="ai-grid">
+            <article class="panel ai-report-panel">
+              <div class="panel-head"><div><span class="panel-kicker">ACCOUNT INVESTIGATION</span><h2>Why may this account be losing?</h2><p id="aiReportIntro">Run the investigation to analyze drawdown, loss concentration, position sizing and trading sequences.</p></div><span class="ai-badge">AI</span></div>
+              <div id="aiFindings" class="ai-findings">
+                <div class="ai-empty"><b>Ready to investigate</b><span>Trade Avata will use the selected account, period and available trade records.</span><button class="primary-btn" id="runAIAnalysis2">Start AI Analysis →</button></div>
+              </div>
+            </article>
+
+            <article class="panel ai-side-panel">
+              <div class="panel-head"><div><span class="panel-kicker">EVIDENCE STATUS</span><h2>What the AI can prove</h2></div></div>
+              <div class="ai-confidence-list">
+                <div><span class="ai-level confirmed">CONFIRMED</span><p>Directly calculated from the recorded account and trade data.</p></div>
+                <div><span class="ai-level evidence">STRONG EVIDENCE</span><p>Repeated pattern supported by multiple records or dimensions.</p></div>
+                <div><span class="ai-level possible">POSSIBLE</span><p>A useful hypothesis that needs more data or rule context.</p></div>
+                <div><span class="ai-level unknown">UNKNOWN</span><p>Not established by the available records.</p></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="ai-investigation-grid">
+            {[
+              ['challenge','Challenge Failure Investigation','Identify drawdown events, loss sequences and risk patterns that can contribute to a failed evaluation.'],
+              ['risk','Risk & Drawdown','Examine position sizing, risk per trade, exposure, streaks and peak-to-trough losses.'],
+              ['overtrading','Overtrading Analysis','Look for unusually high trade frequency, repeated entries and activity after losses.'],
+              ['sizing','Position Sizing Analysis','Compare position size and risk across wins, losses, symbols and time periods.'],
+              ['strategy','Strategy & Session Analysis','Compare strategies, instruments, sessions and days to find meaningful differences.'],
+              ['recurring','Recurring Pattern Analysis','Compare previous periods or challenge attempts to identify repeated risk behaviours.']
+            ].map(([id,title,desc]) => <button class="ai-investigation-card" data-ai-investigation={id}><span>AI</span><div><b>{title}</b><small>{desc}</small></div><em>→</em></button>)}
+          </div>
+
+          <article class="panel ai-challenge-panel">
+            <div class="panel-head"><div><span class="panel-kicker">PROP / EVALUATION MODE</span><h2>Challenge Risk Review</h2><p>When challenge rules are supplied, Trade Avata can compare recorded behaviour with the applicable limits instead of making the trader manually label the account.</p></div></div>
+            <div class="challenge-grid">
+              <div><span>Account environment</span><b id="aiChallengeEnv">DEMO · source-derived</b></div>
+              <div><span>Daily loss review</span><b>Awaiting challenge rules</b></div>
+              <div><span>Overall drawdown review</span><b>Available from account data</b></div>
+              <div><span>Rule source</span><b>Not supplied</b></div>
+            </div>
+            <p class="ai-disclaimer">Trade Avata can identify data-supported contributors to a loss or breach. It should not state that one factor caused an account failure unless the available records and applicable rules establish that conclusion.</p>
+          </article>
+        </section>
+
+        <!-- REPORTS -->
+        <section class="ta-view" data-panel="reports">
+          <div class="page-heading"><div><span class="eyebrow">REPORTING</span><h1>Reports</h1><p>Create reviewable snapshots of performance, risk and trading history.</p></div><button class="primary-btn" id="generateReport">＋ Generate report</button></div>
+          <div class="report-grid"><article class="report-card"><span>MONTHLY REVIEW</span><h2>Monthly Trading Report</h2><p>Performance, monthly comparison, trades, strategies, risk and insights.</p><footer><button class="ghost-btn" data-export="monthly-pdf">⇩ PDF</button><button class="primary-btn" data-export="monthly-xlsx">Spreadsheet</button></footer></article><article class="report-card"><span>PERFORMANCE</span><h2>Performance Report</h2><p>Equity, balance, returns, P&amp;L, expectancy and drawdown profile.</p><footer><button class="ghost-btn" data-export="performance-pdf">⇩ PDF</button><button class="primary-btn" data-export="performance-xlsx">Spreadsheet</button></footer></article><article class="report-card"><span>RISK</span><h2>Risk Report</h2><p>Drawdown, streaks, exposure, sizing and risk consistency.</p><footer><button class="ghost-btn" data-export="risk-pdf">⇩ PDF</button><button class="primary-btn" data-export="risk-xlsx">Spreadsheet</button></footer></article><article class="report-card"><span>TRADES</span><h2>Trade Book Report</h2><p>Complete execution history with filters, sessions, R and MFE/MAE fields.</p><footer><button class="ghost-btn" data-export="trades-pdf">⇩ PDF</button><button class="primary-btn" data-export="trades-xlsx">Spreadsheet</button></footer></article><article class="report-card"><span>BOOKKEEPING</span><h2>Ledger Report</h2><p>Deposits, withdrawals, fees, swaps and trading results.</p><footer><button class="ghost-btn" data-export="bookkeeping-pdf">⇩ PDF</button><button class="primary-btn" data-export="bookkeeping-xlsx">Spreadsheet</button></footer></article><article class="report-card"><span>COMPLETE ACCOUNT</span><h2>Complete Account Report</h2><p>Everything available for the selected account in one review package.</p><footer><button class="ghost-btn" data-export="complete-pdf">⇩ PDF</button><button class="primary-btn" data-export="complete-xlsx">Spreadsheet</button></footer></article></div>
+        </section>
+
+        <!-- DOWNLOADS -->
+        <section class="ta-view" data-panel="downloads">
+          <div class="page-heading"><div><span class="eyebrow">DOWNLOAD CENTER</span><h1>Take Your Analysis With You</h1><p>Download a section for study or export the complete account record.</p></div><button class="primary-btn" data-export="complete-xlsx">⇩ Complete Spreadsheet</button></div>
+          <article class="download-hero"><div><span>COMPLETE ACCOUNT</span><h2>Complete Trading Record</h2><p>Performance + trades + calendar + strategies + risk + bookkeeping + insights + comparison.</p></div><div class="download-actions"><button class="ghost-btn light" data-export="complete-pdf">⇩ PDF</button><button class="primary-btn" data-export="complete-xlsx">⇩ XLSX</button></div></article>
+          <div class="download-grid">{[['Performance','Equity, P&L, returns and drawdown.','performance'],['Trades','Full execution history and trade-level analytics.','trades'],['Calendar','Daily and monthly activity/P&L.','calendar'],['Strategies','Strategy and trade-management analysis.','strategies'],['Risk','Drawdown, streaks, sizing and exposure.','risk'],['Bookkeeping','Deposits, withdrawals, fees and ledger.','bookkeeping'],['Insights','Data-derived observations from your account.','insights'],['Reports','Generated review packages.','monthly']].map(([name,desc,type])=><article class="download-card"><div class="download-icon">⇩</div><h2>{name}</h2><p>{desc}</p><footer><button class="ghost-btn" data-export={`${type}-pdf`}>PDF</button><button class="text-link" data-export={`${type}-xlsx`}>XLSX →</button></footer></article>)}</div>
+        </section>
+
+        <!-- ACCOUNTS -->
+        <section class="ta-view" data-panel="accounts">
+          <div class="page-heading"><div><span class="eyebrow">ACCOUNTS</span><h1>Connected Accounts</h1><p>Multiple accounts can feed one analytics workspace. Source identity is never user-selected.</p></div><button class="primary-btn" id="connectAccount2">＋ Connect Account</button></div>
+          <div class="security-banner"><span>✓</span><div><b>Account environment comes from the source connection.</b><p>Trade Avata does not ask the trader to label an account REAL, DEMO or CONTEST. If a provider cannot verify the environment, it stays unconfirmed.</p></div></div>
+          <div class="account-cards-large">{accounts.map((a,i)=><article class="connected-card" data-account-card={a.id}><div class="connected-top"><span class={`env-badge ${a.environment==='DEMO'?'demo':a.environment==='UNCONFIRMED'?'unknown':'real'}`}>{a.environment === 'UNCONFIRMED' ? 'ACCOUNT TYPE UNCONFIRMED' : a.environment}</span><span>{i===0?'Workspace demo':'Not connected'}</span></div><h2>{a.name}</h2><p>{a.platform} · {a.broker} · {a.currency}</p><div class="account-balance"><span>Equity</span><b>${a.equity.toLocaleString()}</b></div><div class="connected-stats"><span>P&amp;L <b class="positive">+${a.netPnl.toLocaleString()}</b></span><span>Drawdown <b class="negative">-{a.drawdownPct}%</b></span><span>Trades <b>{a.trades}</b></span></div><footer><button class="ghost-btn" data-select-account={a.id}>Open analytics</button><button class="text-link">Account details →</button></footer></article>)}</div>
+          <article class="panel share-panel"><div><span class="panel-kicker">SHARE PORTFOLIO</span><h2>Share a controlled view</h2><p>Publish only the fields the account owner chooses. Credentials and private connection data are never part of a shared page.</p></div><div class="share-controls"><select id="shareVisibility"><option>Private</option><option>Shared link</option><option>Public</option></select><button class="primary-btn" id="shareBtn">Create share link</button></div></article>
+        </section>
+      </div>
+
+      <nav class="mobile-bottom">
+        <button data-view="dashboard"><span>⌂</span>Home</button><button data-view="performance"><span>↗</span>Analytics</button><button data-view="trades"><span>▤</span>Trades</button><button data-view="downloads"><span>⇩</span>More</button>
+      </nav>
+    </main>
+  </div>
+
+  <!-- ACCOUNT CONNECT MODAL -->
+  <dialog class="ta-dialog" id="connectDialog">
+    <div class="dialog-head"><div><span class="eyebrow">ACCOUNT CONNECTION</span><h2>Connect a Trading Account</h2><p>Authenticate through the supported platform/provider. Trade Avata reads the source account information.</p></div><button class="icon-btn" data-close-dialog>×</button></div>
+    <div class="connect-steps">
+      <label><span>1</span><div><b>Trading platform</b><select id="platformSelect"><option>MetaTrader 5</option><option>MetaTrader 4</option><option>cTrader</option><option>Other supported connection</option></select></div></label>
+      <label><span>2</span><div><b>Broker / provider</b><select id="brokerSelect"><option>Choose a broker/provider</option><option>Example Broker</option><option>Other provider</option></select></div></label>
+      <div class="connect-info"><span>✓</span><div><b>No REAL / DEMO question</b><p>Environment, account type and other source fields are retrieved from the connected provider. If unavailable, Trade Avata displays <strong>Account type unconfirmed</strong>.</p></div></div>
+      <div class="connect-permissions"><span>Recommended scope</span><b>Analytics / view-only</b><small>Trading permission is not required for the analytics workspace.</small></div>
+    </div>
+    <footer class="dialog-actions"><button class="ghost-btn" data-close-dialog>Cancel</button><button class="primary-btn" id="startConnection">Authenticate &amp; continue</button></footer>
+    <div class="connect-status" id="connectStatus" hidden></div>
+  </dialog>
+
+  <!-- ACCOUNT PICKER -->
+  <dialog class="ta-dialog small-dialog" id="accountDialog">
+    <div class="dialog-head"><div><span class="eyebrow">ACCOUNT</span><h2>Select workspace account</h2></div><button class="icon-btn" data-close-dialog>×</button></div>
+    <div class="account-picker-list">{accounts.map(a=><button data-select-account={a.id}><span class="status-dot"></span><div><b>{a.name}</b><small>{a.environment} · {a.platform} · {a.currency}</small></div><i>›</i></button>)}</div>
+  </dialog>
+
+  <!-- CUSTOMIZE -->
+  <dialog class="ta-dialog customize-dialog" id="customizeDialog">
+    <div class="dialog-head"><div><span class="eyebrow">WORKSPACE</span><h2>Customize Dashboard</h2><p>Trade Avata Default is the starting layout. Your saved layout belongs to your account.</p></div><button class="icon-btn" data-close-dialog>×</button></div>
+    <div class="preset-row"><button class="preset active" data-preset="balanced">Trade Avata Default</button><button class="preset" data-preset="performance">Performance</button><button class="preset" data-preset="active">Active Trading</button><button class="preset" data-preset="risk">Risk</button></div>
+    <div class="custom-grid">
+      <label>Density<select id="densitySelect"><option value="comfortable">Comfortable</option><option value="compact">Compact</option><option value="spacious">Spacious</option></select></label>
+      <label>Chart height<select id="chartHeightSelect"><option value="standard">Standard</option><option value="tall">Tall</option><option value="short">Short</option></select></label>
+      <label>Chart theme<select id="chartTheme"><option value="blue">Blue</option><option value="high-contrast">High contrast</option><option value="muted">Muted</option></select></label>
+      <label>Accent color<input type="color" id="accentColor" value="#0878ff" /></label>
+      <label>Header color<input type="color" id="headerColor" value="#07101c" /></label>
+      <label>Workspace background<input type="color" id="backgroundColor" value="#06101d" /></label>
+      <label>Panel color<input type="color" id="panelColor" value="#0b1726" /></label>
+    </div>
+    <div class="widget-manager"><div class="manager-head"><b>Widgets</b><small>Drag to reorder · toggle to show/hide</small></div><div id="widgetList">{['kpis','equity','overview','comparison','distribution','monthly','symbols','sessions','insights','recent'].map((id,i)=><div class="manager-row" draggable="true" data-widget-id={id}><span class="drag">⋮⋮</span><b>{id === 'kpis'?'KPI cards':id[0].toUpperCase()+id.slice(1)}</b><label class="switch"><input type="checkbox" checked={i<10} data-widget-toggle={id} /><span></span></label></div>)}</div></div>
+    <footer class="dialog-actions"><button class="ghost-btn" id="resetLayout">Reset Trade Avata Default</button><button class="primary-btn" id="saveLayout">Save dashboard</button></footer>
+  </dialog>
+
+  <!-- DETAIL / SHARE -->
+  <dialog class="ta-dialog small-dialog" id="infoDialog">
+    <div class="dialog-head"><div><span class="eyebrow">TRADE AVATA</span><h2 id="infoTitle">Details</h2><p id="infoBody">Information.</p></div><button class="icon-btn" data-close-dialog>×</button></div>
+    <footer class="dialog-actions"><button class="primary-btn" data-close-dialog>Close</button></footer>
+  </dialog>
+
+  <script define:vars={{ base, demoAccount, accounts, trades, monthly, symbols, strategies, sessions, weekday, equity }}>
+    window.__TRADE_AVATA_ANALYTICS__ = {
+      base,
+      account: demoAccount,
+      accounts,
+      trades,
+      monthly,
+      symbols,
+      strategies,
+      sessions,
+      weekday,
+      equity
+    };
+  </script>
+  <script type="module">
+    import { watchAuth } from '../lib/firebase/auth.js';
+    import { getAnalyticsPreferences, saveAnalyticsPreferences } from '../lib/firebase/analytics.js';
+
+    const DATA = window.__TRADE_AVATA_ANALYTICS__;
+    let analyticsUser = null;
+    const root = document.documentElement;
+    const app = document.getElementById('analyticsApp');
+    const views = [...document.querySelectorAll('[data-panel]')];
+    const navButtons = [...document.querySelectorAll('[data-view]')];
+    const dialogs = [...document.querySelectorAll('dialog')];
+    let currentAccount = DATA.account;
+    let chartMode = 'equity';
+    let latestAIReport = null;
+
+    const $ = (s, scope=document) => scope.querySelector(s);
+    const $$ = (s, scope=document) => [...scope.querySelectorAll(s)];
+    const money = n => `${n >= 0 ? '+' : '-'}$${Math.abs(Number(n)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+
+    function show(id, push=true) {
+      if(!views.some(v=>v.dataset.panel===id)) id='dashboard';
+      views.forEach(v=>v.classList.toggle('active', v.dataset.panel===id));
+      navButtons.forEach(b=>b.classList.toggle('active', b.dataset.view===id));
+      if(push) history.replaceState(null,'','#'+id);
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    navButtons.forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));
+    show(location.hash.replace('#','') || 'dashboard', false);
+    window.addEventListener('hashchange',()=>show(location.hash.replace('#','') || 'dashboard',false));
+
+    function openDialog(id){ const d=document.getElementById(id); if(d?.showModal) d.showModal(); else d?.setAttribute('open',''); }
+    function closeDialog(d){ if(d?.close) d.close(); else d?.removeAttribute('open'); }
+    $$('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>closeDialog(b.closest('dialog'))));
+    dialogs.forEach(d=>d.addEventListener('click',e=>{if(e.target===d) closeDialog(d)}));
+
+    function renderEquity(targetId, values=DATA.equity) {
+      const target=document.getElementById(targetId); if(!target) return;
+      const w=1100,h=330,p=26;
+      const min=Math.min(...values), max=Math.max(...values), range=max-min||1;
+      const points=values.map((v,i)=>`${p+i*((w-p*2)/(values.length-1))},${h-p-((v-min)/range)*(h-p*2)}`);
+      const area=`${p},${h-p} ${points.join(' ')} ${w-p},${h-p}`;
+      const ticks=[0,.25,.5,.75,1].map(t=>`<line x1="${p}" x2="${w-p}" y1="${h-p-t*(h-p*2)}" y2="${h-p-t*(h-p*2)}" class="gridline"/><text x="4" y="${h-p-t*(h-p*2)+4}" class="axis">${Math.round(min+range*t).toLocaleString()}</text>`).join('');
+      target.innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img">${ticks}<polygon points="${area}" class="area"/><polyline points="${points.join(' ')}" class="curve"/>${values.map((v,i)=>i===values.length-1?`<circle cx="${points[i].split(',')[0]}" cy="${points[i].split(',')[1]}" r="5" class="point"/>`:'' ).join('')}</svg>`;
+    }
+
+    function renderMonthly() {
+      const el=$('#monthlyChart'); if(!el) return;
+      const max=Math.max(...DATA.monthly.map(x=>x[1]));
+      el.innerHTML=DATA.monthly.map(x=>`<button class="month-bar" data-month="${x[0]}"><span style="height:${Math.max(12,x[1]/max*100)}%"></span><b>${x[1]}</b><small>${x[0].split(' ')[0]}</small></button>`).join('');
+      $$('.month-bar',el).forEach(b=>b.addEventListener('click',()=>{ show('comparisons'); setDrill(`Month: ${b.dataset.month}`); }));
+    }
+
+    function renderTrades(list=DATA.trades) {
+      const row = t => `<tr data-pnl="${t[6]}"><td>${t[0]}</td><td><b>${t[1]}</b></td><td><span class="side ${t[2].toLowerCase()}">${t[2]}</span></td><td>${t[3]}</td><td>${t[4]}</td><td>${t[5]}</td><td>${t[10]}R</td><td>${t[11]}R</td><td class="${t[6]>=0?'positive':'negative'}">${money(t[6])}</td><td>${t[7]}</td><td>${t[8]}</td><td>${t[9]}</td><td>${t[12]}m</td></tr>`;
+      $('#recentTradesBody').innerHTML=list.slice(0,5).map(row).join('');
+      $('#allTradesBody').innerHTML=list.map(row).join('');
+      $('#tradeCount').textContent=`${list.length} of 321 shown`;
+    }
+
+    function applyTradeFilters(){
+      const q=($('#tradeSearch')?.value||'').trim().toLowerCase();
+      const side=$('#sideFilter')?.value||'', result=$('#resultFilter')?.value||'', strategy=$('#strategyFilter')?.value||'';
+      const filtered=DATA.trades.filter(t=>{
+        const text=t.join(' ').toLowerCase();
+        return (!q||text.includes(q))&&(!side||t[2]===side)&&(!strategy||t[7]===strategy)&&(!result||(result==='win'?t[6]>0:t[6]<0));
+      });
+      renderTrades(filtered);
+    }
+
+    function updateAccount(a){
+      currentAccount=a;
+      const meta=`${a.environment==='UNCONFIRMED'?'ACCOUNT TYPE UNCONFIRMED':a.environment} · ${a.platform} · ${a.currency}`;
+      $('#accountName').textContent=a.name; $('#accountMeta').textContent=meta; $('#filterAccount').textContent=a.name.replace(' Account','');
+      $('#overviewName').textContent=a.name; $('#overviewOwner').textContent=a.owner;
+      $('#overviewEnv').textContent=a.environment==='UNCONFIRMED'?'UNCONFIRMED':a.environment;
+      $('#overviewPlatform').textContent=a.platform; $('#overviewBroker').textContent=a.broker; $('#overviewCurrency').textContent=a.currency;
+      $('#overviewLogin').textContent=a.login; $('#overviewLeverage').textContent=a.leverage;
+      $('#kpiEquity').textContent=`$${a.equity.toLocaleString(undefined,{minimumFractionDigits:2})}`;
+      $('#kpiPnl').textContent=money(a.netPnl); $('#kpiWin').textContent=`${(a.wins/a.trades*100).toFixed(1)}%`;
+      $('#kpiPf').textContent=a.profitFactor; $('#kpiDd').textContent=`-${a.drawdownPct}%`; $('#kpiTrades').textContent=a.trades;
+    }
+
+    $('#accountPicker').addEventListener('click',()=>openDialog('accountDialog'));
+    $$('[data-select-account]').forEach(b=>b.addEventListener('click',()=>{
+      const a=DATA.accounts.find(x=>x.id===b.dataset.selectAccount);
+      if(a){updateAccount(a); closeDialog(b.closest('dialog')); show('dashboard');}
+    }));
+
+    function setDrill(label, description='') {
+      $('#drillPath').innerHTML=`<button id="drillReset">All data</button><span>›</span><b>${label}</b>`;
+      $('#sliceTitle').textContent=label;
+      $('#sliceDescription').textContent=description||'This slice is ready for further drill-down into symbols, sessions, days, strategies and individual trades.';
+      $('#drillReset').addEventListener('click',()=>resetDrill());
+    }
+    function resetDrill(){ $('#drillPath').innerHTML='<button id="drillReset">All data</button><span>›</span><span>Choose a dimension</span>'; $('#sliceTitle').textContent='All recorded trades'; $('#sliceDescription').textContent='Start with a dimension above. Every slice can lead back to individual trades.'; $('#drillReset').addEventListener('click',resetDrill); }
+    $$('.drill-card').forEach(card=>card.addEventListener('click',()=>{const d=card.dataset.drillDimension; const labels={symbol:'Symbol: EURUSD',session:'Session: London',weekday:'Day: Tuesday',strategy:'Strategy: Breakout',direction:'Direction: BUY',hour:'Hour: 09:00–10:00'}; setDrill(labels[d],`Filtered account data for the selected ${d}. Continue to trades to inspect the exact records.`);}));
+    $('#resetDrill').addEventListener('click',resetDrill);
+
+    $$('[data-drill]').forEach(b=>b.addEventListener('click',()=>{const d=b.dataset.drill; show(d==='drawdown'?'risk':'comparisons'); if(d==='symbol') setDrill('Symbol: XAUUSD','Recent XAUUSD results are concentrated in the selected sample.'); if(d==='session') setDrill('Session: London','London shows the highest P&L in the recorded session sample.');}));
+
+    function renderDay(day){
+      const d=$('#dayDetail');
+      const relevant=DATA.trades.filter(t=>Number(t[0].slice(-2))===Number(day));
+      const pnl=relevant.reduce((s,t)=>s+t[6],0);
+      d.innerHTML=`<span class="panel-kicker">DAY DETAIL · SEP ${day}, 2026</span><h2>${money(pnl)} P&L</h2><p>${relevant.length||2} recorded trades in this sample.</p><div class="day-stats"><div><span>Win rate</span><b>${relevant.length?Math.round(relevant.filter(t=>t[6]>0).length/relevant.length*100):50}%</b></div><div><span>Trades</span><b>${relevant.length||2}</b></div><div><span>Symbols</span><b>${[...new Set(relevant.map(t=>t[1]))].join(', ')||'EURUSD'}</b></div></div><button class="primary-btn" data-view="trades" id="dayTrades">View day trades →</button>`;
+      $('#dayTrades').addEventListener('click',()=>show('trades'));
+    }
+    $$('.day-cell').forEach(c=>c.addEventListener('click',()=>renderDay(c.dataset.day)));
+
+    $$('.chart-tab').forEach(b=>b.addEventListener('click',()=>{
+      $$('.chart-tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); chartMode=b.dataset.chart;
+      const values=chartMode==='drawdown'?DATA.equity.map((v,i)=>-Math.max(0,(Math.max(...DATA.equity.slice(0,i+1))-v)/Math.max(...DATA.equity.slice(0,i+1))*100)):DATA.equity;
+      renderEquity('equityChart',values); renderEquity('performanceChart',values);
+    }));
+    $$('.chart-range button').forEach(b=>b.addEventListener('click',()=>{$$('.chart-range button').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+
+    function applyChartTheme(theme){
+      const themes={
+        blue:{line:'#0878ff',grid:'#17314c'},
+        'high-contrast':{line:'#72c8ff',grid:'#365a78'},
+        muted:{line:'#7f9db9',grid:'#26384b'}
+      };
+      const t=themes[theme]||themes.blue;
+      app.style.setProperty('--ta-chart-line',t.line); app.style.setProperty('--ta-chart-grid',t.grid);
+    }
+    const defaultWidgetOrder=['kpis','equity','overview','comparison','distribution','monthly','symbols','sessions','insights','recent'];
+    function applyWidgetOrder(order=defaultWidgetOrder){
+      const canvas=$('#dashboardCanvas');
+      if(!canvas) return;
+      order.forEach(id=>{ const w=canvas.querySelector(`[data-widget="${id}"]`); if(w) canvas.appendChild(w); });
+    }
+    function setupLayout(){
+      const saved=JSON.parse(localStorage.getItem('trade-avata-analytics-layout')||'null');
+      if(saved?.density) app.dataset.density=saved.density;
+      if(saved?.chartHeight) app.dataset.chartHeight=saved.chartHeight;
+      if(saved?.accent) app.style.setProperty('--ta-accent',saved.accent);
+      if(saved?.background) app.style.setProperty('--ta-bg',saved.background);
+      if(saved?.header) app.style.setProperty('--ta-header',saved.header);
+      if(saved?.panel) app.style.setProperty('--ta-panel',saved.panel);
+      if(saved?.chartTheme) applyChartTheme(saved.chartTheme);
+      if(saved?.hidden) saved.hidden.forEach(id=>{ $$(`[data-widget="${id}"]`).forEach(w=>w.classList.add('widget-hidden')); $$(`[data-widget-toggle="${id}"]`).forEach(x=>x.checked=false); });
+      applyWidgetOrder(saved?.widgetOrder || defaultWidgetOrder);
+    }
+    function saveLayout(){
+      const hidden=$$('[data-widget-toggle]:not(:checked)').map(x=>x.dataset.widgetToggle);
+      const widgetOrder=$$('#widgetList .manager-row').map(row=>row.dataset.widgetId);
+      const obj={density:$('#densitySelect').value,chartHeight:$('#chartHeightSelect').value,chartTheme:$('#chartTheme').value,accent:$('#accentColor').value,header:$('#headerColor').value,background:$('#backgroundColor').value,panel:$('#panelColor').value,hidden,widgetOrder};
+      localStorage.setItem('trade-avata-analytics-layout',JSON.stringify(obj));
+      if (analyticsUser) {
+        saveAnalyticsPreferences(analyticsUser.uid,obj).catch(()=>toast('Saved locally. Cloud layout sync is unavailable right now.'));
+      }
+      setupLayout(); closeDialog($('#customizeDialog')); toast(analyticsUser?'Dashboard layout saved to your workspace.':'Dashboard layout saved on this device.');
+    }
+    function resetLayout(){ localStorage.removeItem('trade-avata-analytics-layout'); app.dataset.density='comfortable';app.dataset.chartHeight='standard';app.style.removeProperty('--ta-accent');app.style.removeProperty('--ta-bg');app.style.removeProperty('--ta-header');app.style.removeProperty('--ta-panel');app.style.removeProperty('--ta-chart-line');app.style.removeProperty('--ta-chart-grid'); $('#chartTheme').value='blue';$('#accentColor').value='#0878ff';$('#headerColor').value='#07101c';$('#backgroundColor').value='#06101d';$('#panelColor').value='#0b1726';$$('.widget-hidden').forEach(w=>w.classList.remove('widget-hidden'));$$('[data-widget-toggle]').forEach(x=>x.checked=true); applyWidgetOrder(defaultWidgetOrder); $$('#widgetList .manager-row').sort((a,b)=>defaultWidgetOrder.indexOf(a.dataset.widgetId)-defaultWidgetOrder.indexOf(b.dataset.widgetId)).forEach(row=>$('#widgetList').appendChild(row)); toast('Trade Avata Default restored.'); }
+    $('#customizeBtn').addEventListener('click',()=>openDialog('customizeDialog'));
+    $$('[data-open-customize]').forEach(b=>b.addEventListener('click',()=>openDialog('customizeDialog')));
+    $('#saveLayout').addEventListener('click',saveLayout); $('#resetLayout').addEventListener('click',resetLayout);
+    $('#densitySelect').addEventListener('change',e=>app.dataset.density=e.target.value);
+    $('#chartHeightSelect').addEventListener('change',e=>app.dataset.chartHeight=e.target.value);
+    $('#accentColor').addEventListener('input',e=>app.style.setProperty('--ta-accent',e.target.value));
+    $('#headerColor').addEventListener('input',e=>app.style.setProperty('--ta-header',e.target.value));
+    $('#backgroundColor').addEventListener('input',e=>app.style.setProperty('--ta-bg',e.target.value));
+    $('#panelColor').addEventListener('input',e=>app.style.setProperty('--ta-panel',e.target.value));
+    $('#chartTheme').addEventListener('change',e=>applyChartTheme(e.target.value));
+    $$('[data-widget-toggle]').forEach(input=>input.addEventListener('change',()=>{const w=$(`[data-widget="${input.dataset.widgetToggle}"]`);w?.classList.toggle('widget-hidden',!input.checked)}));
+    $$('.preset').forEach(p=>p.addEventListener('click',()=>{ $$('.preset').forEach(x=>x.classList.remove('active'));p.classList.add('active'); const presets={balanced:['comfortable','standard'],performance:['spacious','tall'],active:['compact','standard'],risk:['comfortable','tall']}; const [d,h]=presets[p.dataset.preset]; $('#densitySelect').value=d;$('#chartHeightSelect').value=h;app.dataset.density=d;app.dataset.chartHeight=h;}));
+    setupLayout();
+    watchAuth(async user => {
+      analyticsUser = user;
+      if (!user) return;
+      try {
+        const prefs = await getAnalyticsPreferences(user.uid);
+        if (!prefs) return;
+        localStorage.setItem('trade-avata-analytics-layout',JSON.stringify(prefs));
+        setupLayout();
+        if (prefs.density) $('#densitySelect').value=prefs.density;
+        if (prefs.chartHeight) $('#chartHeightSelect').value=prefs.chartHeight;
+        if (prefs.accent) { $('#accentColor').value=prefs.accent; app.style.setProperty('--ta-accent',prefs.accent); }
+        if (prefs.header) { $('#headerColor').value=prefs.header; app.style.setProperty('--ta-header',prefs.header); }
+        if (prefs.background) { $('#backgroundColor').value=prefs.background; app.style.setProperty('--ta-bg',prefs.background); }
+        if (prefs.panel) { $('#panelColor').value=prefs.panel; app.style.setProperty('--ta-panel',prefs.panel); }
+        if (prefs.chartTheme) { $('#chartTheme').value=prefs.chartTheme; applyChartTheme(prefs.chartTheme); }
+      } catch {}
+    });
+
+    // Basic drag reorder for dashboard widgets. We only reorder within the main dashboard flow.
+    let dragged=null;
+    $$('#widgetList .manager-row').forEach(row=>row.addEventListener('dragstart',()=>{dragged=row}));
+    $$('#widgetList .manager-row').forEach(row=>row.addEventListener('dragover',e=>e.preventDefault()));
+    $$('#widgetList .manager-row').forEach(row=>row.addEventListener('drop',()=>{if(dragged&&dragged!==row){row.parentNode.insertBefore(dragged,row); const order=$$('#widgetList .manager-row').map(x=>x.dataset.widgetId); applyWidgetOrder(order); toast('Widget order updated. Save dashboard to keep it.')}}));
+
+    function toast(message){let t=$('.ta-toast');if(!t){t=document.createElement('div');t.className='ta-toast';document.body.appendChild(t)}t.textContent=message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+    // Connect flow deliberately does not ask the user to label REAL/DEMO.
+    $('#connectBtn').addEventListener('click',()=>openDialog('connectDialog'));
+    $('#connectAccount2').addEventListener('click',()=>openDialog('connectDialog'));
+    $('#startConnection').addEventListener('click',()=>{
+      const status=$('#connectStatus'); status.hidden=false; status.innerHTML='<b>Provider connection is not configured in this static build.</b><span>Choose a supported provider in the production connector layer. No credentials are collected by this page.</span>'; toast('Connection adapter required for live account sync.');
+    });
+    $('#syncBtn').addEventListener('click',()=>toast('No live provider is connected. Demo workspace remains unchanged.'));
+    $('#accountDetails').addEventListener('click',()=>{ $('#infoTitle').textContent='Account source details'; $('#infoBody').textContent='In production, these fields are populated from the authenticated broker/platform connection. User-entered environment labels are not trusted as verification.'; openDialog('infoDialog'); });
+
+    $('#mobileMenu').addEventListener('click',()=>document.body.classList.toggle('nav-open'));
+    $('#topMore').addEventListener('click',()=>openDialog('customizeDialog'));
+    $('#periodBtn').addEventListener('click',()=>toast('Period selector ready for account-data filtering.'));
+    $('#filterMore').addEventListener('click',()=>toast('Advanced filters: day, hour, session, result, risk, holding time and tags.'));
+    $('#clearFilters').addEventListener('click',()=>{$('#tradeSearch').value='';$('#sideFilter').value='';$('#resultFilter').value='';$('#strategyFilter').value='';applyTradeFilters()});
+    ['tradeSearch','sideFilter','resultFilter','strategyFilter'].forEach(id=>document.getElementById(id)?.addEventListener('input',applyTradeFilters));
+    $('#shareBtn').addEventListener('click',()=>{const v=$('#shareVisibility').value; $('#infoTitle').textContent='Share portfolio'; $('#infoBody').textContent=`${v} sharing will create a controlled view. The shared page will use source-derived authenticity status and will never expose broker credentials.`;openDialog('infoDialog')});
+    $('#generateReport').addEventListener('click',()=>{show('downloads');toast('Report workspace opened. Choose PDF or XLSX for the report you want.')});
+    $('#addLedger').addEventListener('click',()=>{ $('#infoTitle').textContent='Add bookkeeping record'; $('#infoBody').textContent='The ledger UI is ready for deposits, withdrawals, fees, swaps and adjustments. Production writes will use the authenticated account backend.';openDialog('infoDialog')});
+
+
+    function renderAIReport(report, mode='evidence'){
+      latestAIReport=report;
+      const findings=$('#aiFindings');
+      if(!findings) return;
+      $('#aiReportIntro').textContent=report.summary;
+      $('#aiModeLabel').textContent=mode==='provider'?'AI provider connected':'Evidence engine ready';
+      $('#aiModeDetail').textContent=mode==='provider'?'Narrative generated from Trade Avata evidence payload':'Local evidence analysis · connect a trusted AI endpoint for generative explanations';
+      findings.innerHTML=`<div class="ai-summary-box"><span>PRIMARY INVESTIGATION</span><h3>${report.headline}</h3><p>${report.summary}</p></div>${report.findings.map((f,i)=>`<article class="ai-finding"><div class="ai-finding-top"><span class="ai-level ${f.levelClass}">${f.level}</span><b>${String(i+1).padStart(2,'0')}</b></div><h3>${f.title}</h3><p>${f.detail}</p><div class="ai-evidence"><span>Evidence</span><b>${f.evidence}</b></div><button class="text-link" data-ai-drill="${f.drill}">Inspect supporting data →</button></article>`).join('')}<div class="ai-next-step"><b>Next investigation</b><span>${report.nextStep}</span></div>`;
+      $$('[data-ai-drill]').forEach(b=>b.addEventListener('click',()=>{const d=b.dataset.aiDrill; show(d==='risk'?'risk':d==='trades'?'trades':d==='comparisons'?'comparisons':'risk');}));
+    }
+
+    async function runAIAnalysis(){
+      const evidence=buildAIAnalyticsEvidence({account:currentAccount,trades:DATA.trades,monthly:DATA.monthly,strategies:DATA.strategies,sessions:DATA.sessions,weekday:DATA.weekday});
+      const localReport=evidence.report;
+      renderAIReport(localReport,'evidence');
+      toast('Trade Avata AI Analytics completed the evidence review.');
+      try{
+        const response=await requestAIAnalytics(getAIAnalyticsPrompt(evidence));
+        if(response?.report) renderAIReport(response.report,'provider');
+      }catch{}
+    }
+    $('#runAIAnalysis')?.addEventListener('click',runAIAnalysis);
+    $('#runAIAnalysis2')?.addEventListener('click',runAIAnalysis);
+    $('#aiScopeBtn')?.addEventListener('click',()=>{ $('#infoTitle').textContent='AI Analytics data scope'; $('#infoBody').textContent='The investigation uses the selected account, recorded trades, P&L, drawdown, position-size proxies, strategy/session dimensions and available bookkeeping/rule data. AI receives structured evidence rather than broker credentials. Challenge-specific conclusions require the applicable challenge rules.'; openDialog('infoDialog'); });
+    $$('.ai-investigation-card').forEach(card=>card.addEventListener('click',()=>{show('ai-analytics');runAIAnalysis();toast(`${card.querySelector('b')?.textContent||'Investigation'} started.`)}));
+
+    async function exportXlsx(kind){
+      let XLSX;
+      try { XLSX=await import('https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs'); }
+      catch(e){ csvFallback(kind); toast('XLSX library unavailable; CSV fallback downloaded.'); return; }
+      const wb=XLSX.utils.book_new();
+      const add=(name,rows)=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=rows[0].map((_,i)=>({wch:Math.min(28,Math.max(12,...rows.map(r=>String(r[i]??'').length)+2))}));XLSX.utils.book_append_sheet(wb,ws,name.slice(0,31));};
+      add('Summary',[['Trade Avata Analytics','Value'],['Account',currentAccount.name],['Environment',currentAccount.environment],['Platform',currentAccount.platform],['Broker',currentAccount.broker],['Currency',currentAccount.currency],['Equity',currentAccount.equity],['Net P&L',currentAccount.netPnl],['Return %',currentAccount.returnPct],['Win Rate %',currentAccount.wins/currentAccount.trades*100],['Profit Factor',currentAccount.profitFactor],['Max Drawdown %',-currentAccount.drawdownPct],['Trades',currentAccount.trades]]);
+      if(kind.includes('trades')||kind==='complete') add('Trades',[['Date','Symbol','Side','Volume','Entry','Exit','R','MAE','P&L','Strategy','Session','Day','Hold Minutes'],...DATA.trades]);
+      if(kind.includes('performance')||kind==='complete') add('Monthly Performance',[['Month','P&L','Return %','Profit Factor','Trades','Avg R'],...DATA.monthly]);
+      if(kind.includes('strategies')||kind==='complete') add('Strategies',[['Strategy','P&L','Profit Factor','Win Rate %','Trades','Avg R'],...DATA.strategies]);
+      if(kind.includes('risk')||kind==='complete') add('Risk',[['Metric','Value'],['Max Drawdown %',-currentAccount.drawdownPct],['Longest Losing Streak',6],['Average Risk / Trade R',currentAccount.avgR],['Largest Loss',-318.50],['Largest Win',482.20],['Recovery Days',11]]);
+      if(kind.includes('calendar')||kind==='complete') add('Calendar',[['Date','P&L','Trades'],...Array.from({length:30},(_,i)=>[`2026-09-${String(i+1).padStart(2,'0')}`,i%9===0?-86:i%4===0?182:64,(i%4)+1])]);
+      if(kind.includes('bookkeeping')||kind==='complete') add('Ledger',[['Date','Type','Description','Amount'],['2026-07-01','Deposit','Initial funding',10000],['2026-09-28','Trading P&L','Closed trades',3094.60],['2026-09-28','Fees','Commissions + swaps',-248.40]]);
+      if(kind.includes('ai-analytics')||kind==='complete') add('AI Analytics',[['Finding','Level','Evidence'],...(latestAIReport?.findings||[]).map(f=>[f.title,f.level,f.evidence])]);
+      if(kind.includes('insights')||kind==='complete') add('Insights',[['Observation','Detail'],['Period comparison','Current P&L is above the prior period.'],['Symbol concentration','EURUSD and XAUUSD contribute a large share of sample P&L.'],['Session','London is strongest in this sample.'],['Risk','Maximum drawdown is 8.7%.']]);
+      XLSX.writeFile(wb,`trade-avata-${kind}-report.xlsx`,{compression:true});
+      toast('XLSX report prepared.');
+    }
+    function csvFallback(kind){const rows=[['Trade Avata Analytics','Value'],['Account',currentAccount.name],['Net P&L',currentAccount.netPnl],['Equity',currentAccount.equity],['Trades',currentAccount.trades]];const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`trade-avata-${kind}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+    function exportPdf(kind){
+      const w=window.open('','_blank','width=980,height=800'); if(!w){toast('Allow pop-ups to create the PDF.');return}
+      w.document.write(`<html><head><title>Trade Avata — ${kind}</title><style>body{font-family:Arial,sans-serif;padding:38px;color:#0b1728}h1{font-size:28px}h2{margin-top:28px;font-size:17px}.meta{color:#526173;font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.box{border:1px solid #d8e1ec;border-radius:10px;padding:14px;margin:8px 0}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #e1e7ef;text-align:left;font-size:11px}</style></head><body><h1>Trade Avata — ${kind.replaceAll('-',' ')}</h1><div class="meta">Generated ${new Date().toLocaleString()} · ${currentAccount.name} · ${currentAccount.platform}</div><div class="grid"><div class="box"><b>Equity</b><br>$${currentAccount.equity.toLocaleString()}</div><div class="box"><b>Net P&L</b><br>${money(currentAccount.netPnl)}</div><div class="box"><b>Win Rate</b><br>${(currentAccount.wins/currentAccount.trades*100).toFixed(1)}%</div></div><h2>Report scope</h2><p>This report contains the selected Trade Avata analytics scope. Production values are populated from the authenticated account data source.</p><h2>Key metrics</h2><table><tr><th>Metric</th><th>Value</th></tr><tr><td>Profit Factor</td><td>${currentAccount.profitFactor}</td></tr><tr><td>Max Drawdown</td><td>-${currentAccount.drawdownPct}%</td></tr><tr><td>Trades</td><td>${currentAccount.trades}</td></tr><tr><td>Average R</td><td>+${currentAccount.avgR}R</td></tr></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);w.document.close()
+    }
+    $$('[data-export]').forEach(b=>b.addEventListener('click',()=>{const kind=b.dataset.export;if(kind.endsWith('-xlsx'))exportXlsx(kind.replace('-xlsx',''));else exportPdf(kind.replace('-pdf',''))}));
+
+    renderEquity('equityChart'); renderEquity('performanceChart'); renderMonthly(); renderTrades(); applyTradeFilters(); resetDrill();
+  </script>
+</body>
+</html>

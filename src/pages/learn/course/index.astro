@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Trade Avata Courses" description="Structured Trade Avata learning courses.">
+<section class="section"><div class="shell"><span class="eyebrow">LEARN</span><h1 class="page-title">Courses</h1><p class="lead">Courses are organized as Course → Module → Lesson. Instructors can build and publish the structure from the Learning Manager.</p><div class="card" style="margin-top:28px"><h3>Course library</h3><p>Published courses will appear here as the backend learning library is populated.</p><a class="button button-small" href={`${base}learn/`} style="margin-top:14px">Back to Learn</a></div></div></section>
+</BaseLayout>

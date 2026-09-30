@@ -1,0 +1,7 @@
+---
+import PrivateAppLayout from '../../../layouts/PrivateAppLayout.astro'; import PrivateCopyGate from '../../../components/PrivateCopyGate.astro';
+const rows=[['TEST-0001','EURUSD','BUY','Awaiting execution engine'],['TEST-0002','XAUUSD','SELL','Recorded'],['TEST-0003','GBPUSD','BUY','Risk check']];
+const base = import.meta.env.BASE_URL;
+---
+<PrivateAppLayout title="Copy Trading — Activity"><PrivateCopyGate /><main class="workspace"><header><a href={`${base}copy-trading/`}>← Copy Trading</a><span>ACTIVITY</span></header><h1>Copy Activity</h1><p>Every copy instruction is recorded with its source, risk decision, execution state and error information.</p><div class="table"><table><thead><tr><th>ID</th><th>Symbol</th><th>Side</th><th>Status</th></tr></thead><tbody>{rows.map(r=><tr>{r.map(c=><td>{c}</td>)}</tr>)}</tbody></table></div></main></PrivateAppLayout>
+<style is:global>.workspace{max-width:1100px;margin:auto;padding:28px}.workspace header{display:flex;justify-content:space-between;color:var(--app-muted)}.workspace h1{font-size:48px;margin-top:70px}.workspace p{color:var(--app-muted);line-height:1.6}.table{margin-top:30px;overflow:auto;border:1px solid var(--app-border);border-radius:16px;background:var(--app-panel)}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:15px;border-bottom:1px solid var(--app-border);white-space:nowrap}th{color:var(--app-muted);font-size:12px}</style>

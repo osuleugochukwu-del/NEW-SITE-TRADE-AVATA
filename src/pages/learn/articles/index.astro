@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Trade Avata Articles" description="Trade Avata written learning articles.">
+<section class="section"><div class="shell"><span class="eyebrow">LEARN</span><h1 class="page-title">Articles and lessons</h1><p class="lead">The learning library is managed from the Trade Avata backend. Published articles and course lessons can be added without editing the website source.</p><div class="card" style="margin-top:28px"><h3>Learning library</h3><p>When published content is available, it appears here for members and visitors according to its access rules.</p><a class="button button-small" href={`${base}learn/`} style="margin-top:14px">Back to Learn</a></div></div></section>
+</BaseLayout>

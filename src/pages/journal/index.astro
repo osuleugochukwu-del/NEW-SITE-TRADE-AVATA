@@ -1,0 +1,235 @@
+---
+import PrivateAppLayout from '../../layouts/PrivateAppLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+
+<PrivateAppLayout title="Trade Avata — Trading Journal">
+  <div class="journal-app" id="journalApp">
+    <header class="journal-topbar">
+      <div class="top-left">
+        <a class="journal-brand" href={base} aria-label="Trade Avata home">
+          <img src={`${base}brand/trade-avata-logo.svg`} alt="Trade Avata" />
+          <span>Trade Avata</span>
+        </a>
+        <span class="slash">/</span>
+        <span class="crumb">My Trading</span>
+        <span class="slash">/</span>
+        <strong class="crumb-current">Journal</strong>
+      </div>
+      <div class="top-actions">
+        <span class="sync-pill" id="syncStatus"><i></i> Local</span>
+        <button class="top-btn" id="exportBtn" title="Export journal">Export</button>
+        <button class="top-btn" id="importBtn" title="Import journal">Import</button>
+        <input id="importFile" type="file" accept="application/json" hidden />
+        <button class="top-btn ai-top" id="aiReviewBtn">✦ AI Review</button>
+        <button class="top-btn primary" id="newTradeBtn">New</button>
+      </div>
+    </header>
+
+    <div class="journal-layout">
+      <aside class="journal-sidebar">
+        <div class="side-heading">
+          <div class="workspace-mark">✦</div>
+          <div><strong>TRADING JOURNAL</strong><small id="userState">Personal workspace</small></div>
+        </div>
+        <button class="side-create" id="newTradeSide">＋ New trade</button>
+        <nav class="side-nav" aria-label="Journal views">
+          <button class="active" data-view="all">▦ <span>All trades</span><em id="allCount">0</em></button>
+          <button data-view="today">◷ <span>Today</span></button>
+          <button data-view="reviews">✎ <span>Reviews</span></button>
+          <button data-view="gallery">▧ <span>Gallery</span></button>
+        </nav>
+        <div class="side-group">
+          <label>VIEWS</label>
+          <button data-filter="wins"><b class="dot win"></b>Winning trades</button>
+          <button data-filter="losses"><b class="dot loss"></b>Losing trades</button>
+          <button data-filter="open"><b class="dot open"></b>Incomplete</button>
+        </div>
+        <div class="side-group">
+          <label>LIBRARY</label>
+          <button id="strategiesBtn">◇ <span>Strategies</span><em id="strategyCount">0</em></button>
+          <button id="propertiesBtn">☷ <span>Properties</span></button>
+        </div>
+        <div class="side-bottom">
+          <div class="storage-note"><span>⌁</span><div><strong>Saved automatically</strong><small>Your journal stays on this device.</small></div></div>
+          <button id="resetJournalBtn">↺ Reset demo data</button>
+        </div>
+      </aside>
+
+      <main class="journal-main">
+        <section class="journal-header">
+          <div>
+            <div class="eyebrow">TRADING JOURNAL</div>
+            <h1 id="journalTitle">June</h1>
+            <p>Turn every trade into evidence you can review, learn from and build on.</p>
+          </div>
+          <div class="header-stats">
+            <div><span>Trades</span><strong id="statTrades">0</strong></div>
+            <div><span>Reviewed</span><strong id="statReviewed">0%</strong></div>
+            <div><span>Wins</span><strong id="statWins">0</strong></div>
+          </div>
+        </section>
+
+        <section class="database-toolbar">
+          <div class="view-tabs">
+            <button class="active" data-main-view="table">▤ Table</button>
+            <button data-main-view="gallery">▦ Gallery</button>
+            <button id="addPropertyBtn">＋ Property</button>
+          </div>
+          <div class="database-actions">
+            <div class="search-box"><span>⌕</span><input id="tradeSearch" placeholder="Search trades…" /></div>
+            <button id="filterBtn">≡ Filter</button>
+            <button id="sortBtn">↕ Sort</button>
+          </div>
+        </section>
+
+        <section class="database" id="database">
+          <div class="database-scroll">
+            <table class="journal-table" id="journalTable">
+              <thead><tr id="tableHead"></tr></thead>
+              <tbody id="tradeBody"></tbody>
+            </table>
+          </div>
+          <button class="new-row" id="newRowBtn">＋ New</button>
+          <div class="database-footer" id="tableFooter"></div>
+        </section>
+
+        <section class="gallery-view" id="galleryView" hidden></section>
+        <section class="reviews-view" id="reviewsView" hidden>
+          <div class="reviews-intro"><div class="ai-badge">✦</div><div><div class="eyebrow">AI JOURNAL REVIEW</div><h2>Review the decisions behind your trades.</h2><p>Select any trade to inspect its evidence, execution and lessons. AI only works from what you recorded.</p></div></div>
+          <div id="reviewCards" class="review-cards"></div>
+        </section>
+        <section class="library-view" id="libraryView" hidden></section>
+      </main>
+    </div>
+
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="trade-drawer" id="tradeDrawer" aria-hidden="true">
+      <div class="drawer-top">
+        <button class="drawer-close" id="closeDrawer" aria-label="Close">×</button>
+        <div class="drawer-title-wrap"><span class="eyebrow">TRADE RECORD</span><h2 id="drawerTitle">AUDUSD</h2><span id="drawerSub">June 5, 2024</span></div>
+        <div class="drawer-actions"><button class="drawer-btn" id="duplicateTradeBtn">Duplicate</button><button class="drawer-btn primary" id="saveTradeBtn">Save</button></div>
+      </div>
+      <div class="drawer-scroll">
+        <div class="record-section first"><div class="section-title"><strong>Properties</strong><span>Click any value to edit</span></div><div class="property-grid" id="propertyGrid"></div></div>
+        <div class="record-section"><div class="section-title"><strong>Decision</strong><span>Why did I take it?</span></div>
+          <label class="field"><span>Thesis</span><textarea id="fThesis" placeholder="What did you see, and why did the trade make sense?"></textarea></label>
+          <label class="field"><span>Confluences</span><textarea id="fConfluences" placeholder="Sweep, CIS, displacement, MSS, FVG…"></textarea></label>
+          <label class="field"><span>Execution notes</span><textarea id="fExecution" placeholder="Entry, stop, target, management, hesitation…"></textarea></label>
+        </div>
+        <div class="record-section"><div class="section-title"><strong>Review</strong><span>Separate setup quality from outcome</span></div>
+          <div class="ratings"><label><span>Setup quality <output id="setupRatingOut">7</output>/10</span><input id="fSetupRating" type="range" min="1" max="10" value="7" /></label><label><span>Execution quality <output id="executionRatingOut">7</output>/10</span><input id="fExecutionRating" type="range" min="1" max="10" value="7" /></label></div>
+          <label class="field"><span>Lesson</span><textarea id="fLesson" placeholder="What will you repeat, change or avoid next time?"></textarea></label>
+          <label class="field"><span>Evidence / chart link</span><input id="fEvidence" placeholder="Paste a chart image URL or note where the evidence is stored" /></label>
+        </div>
+        <div class="record-section ai-section">
+          <div class="ai-head"><div class="ai-orb">✦</div><div><strong>Trade Avata AI</strong><span>Evidence-based journal review</span></div><button class="drawer-btn" id="runDrawerAI">Analyze</button></div>
+          <div class="ai-output" id="aiOutput">AI will compare your recorded thesis, confirmations, strategy, execution and outcome. Missing information is shown instead of invented.</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="modal" id="propertyModal" hidden>
+      <div class="modal-card large">
+        <button class="modal-close" id="closePropertyModal">×</button>
+        <div class="eyebrow">JOURNAL SETUP</div><h2>Make the journal yours.</h2><p>Create properties once and they become available on every trade.</p>
+        <div class="modal-tabs"><button class="active" data-manager="properties">Properties</button><button data-manager="strategies">Strategies</button></div>
+        <div id="propertyManager">
+          <div class="create-line"><input id="propertyInput" placeholder="Property name, e.g. Emotion" /><select id="propertyType"><option value="text">Text</option><option value="select">Select</option><option value="multi">Multi-select</option><option value="number">Number</option><option value="date">Date</option><option value="checkbox">Checkbox</option></select><button class="drawer-btn primary" id="createPropertyBtn">Add</button></div>
+          <div class="manager-list" id="propertyList"></div>
+        </div>
+        <div id="strategyManager" hidden>
+          <div class="create-line"><input id="strategyInput" placeholder="Strategy name, e.g. Liquidity Sweep" /><button class="drawer-btn primary" id="createStrategyBtn">＋ Save strategy</button></div>
+          <div class="manager-help">Create a strategy once. It becomes a reusable choice whenever you journal a trade.</div>
+          <div class="manager-list" id="strategyList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ base, aiEndpoint: import.meta.env.PUBLIC_TRADE_AVATA_AI_ENDPOINT || '', projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || '' }}>
+    import { auth, watchAuth } from '../../lib/firebase/auth.js';
+    import { db } from '../../lib/firebase/db.js';
+    import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+
+    const seedTrades = [
+      {id:'t1',symbol:'EURUSD',position:'BUY',session:'NYKZ',date:'2024-06-03',type:'CONTINUATION',confirmation:['ENGULFING'],rr:'1:2RR',entryTF:'1H',risk:'0.5%',forecast:'HIGH PROBABILITY ENTRY',strategy:'Liquidity Sweep',outcome:true,notes:{thesis:'HTF bullish structure with a clean liquidity sweep into the level.',confluences:'Sweep · CIS · MSS · FVG',execution:'Entered after confirmation; no early exit.',lesson:'Keep the trigger objective.',setupRating:8,executionRating:9}},
+      {id:'t2',symbol:'AUDUSD',position:'SELL',session:'NYKZ',date:'2024-06-03',type:'REVERSAL',confirmation:['FVG','MSS'],rr:'1:2RR',entryTF:'1H',risk:'0.5%',forecast:'LOW RISK ENTRY',strategy:'Reversal',outcome:false,notes:{thesis:'Reversal after rejection from a higher-timeframe level.',confluences:'Sweep · CIS',execution:'Exited early after hesitation.',lesson:'Do not change the plan because of a temporary pullback.',setupRating:7,executionRating:5}},
+      {id:'t3',symbol:'AUDUSD',position:'BUY',session:'ASKZ',date:'2024-06-05',type:'CONTINUATION',confirmation:['SWEEP','CIS','DISPLACEMENT','MSS','FVG'],rr:'1:2RR',entryTF:'1H',risk:'0.5%',forecast:'HIGH PROBABILITY ENTRY',strategy:'Continuation',outcome:true,notes:{thesis:'Continuation after sweep and displacement.',confluences:'SWEEP · CIS · DISPLACEMENT · MSS · FVG',execution:'Waited for confirmation before entry.',lesson:'Keep confirmation sequence consistent.',setupRating:9,executionRating:9}}
+    ];
+    const defaultStrategies=['Liquidity Sweep','Continuation','Reversal'];
+    const storageKey='trade-avata-journal-v3';
+    const strategyKey='trade-avata-journal-strategies-v2';
+    const propertyKey='trade-avata-journal-properties-v2';
+    let trades=JSON.parse(localStorage.getItem(storageKey)||'null')||seedTrades;
+    let strategies=JSON.parse(localStorage.getItem(strategyKey)||'null')||defaultStrategies;
+    let customProperties=JSON.parse(localStorage.getItem(propertyKey)||'null')||[];
+    let selectedId=trades[0]?.id||null;
+    let activeFilter='all';
+    let activeView='table';
+    let currentUser=null;
+    const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+    const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    const keyLabel=k=>k.replace(/([A-Z])/g,' $1').replace(/^./,x=>x.toUpperCase());
+    const dayName=date=>new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'}).toUpperCase();
+    const formatDate=date=>date?new Date(date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+    function persistLocal(){localStorage.setItem(storageKey,JSON.stringify(trades));localStorage.setItem(strategyKey,JSON.stringify(strategies));localStorage.setItem(propertyKey,JSON.stringify(customProperties));setSync('Local');}
+    function setSync(label,good=true){const el=$('#syncStatus');if(el){el.innerHTML=`<i class="${good?'good':''}"></i> ${esc(label)}`;}}
+    function workspaceData(){return {trades,strategies,customProperties,updatedAt:serverTimestamp()};}
+    async function syncCloud(){if(!currentUser||!db)return;try{await setDoc(doc(db,'journalWorkspaces',currentUser.uid),workspaceData(),{merge:true});setSync('Synced',true)}catch(e){setSync('Local',false)}}
+    async function loadCloud(user){currentUser=user;if(!user){setSync('Local');return;}$('#userState').textContent=user.displayName||user.email||'Signed-in workspace';if(!db){setSync('Local');return;}try{const snap=await getDoc(doc(db,'journalWorkspaces',user.uid));if(snap.exists()){const d=snap.data();if(Array.isArray(d.trades))trades=d.trades;if(Array.isArray(d.strategies))strategies=d.strategies;if(Array.isArray(d.customProperties))customProperties=d.customProperties;localStorage.setItem(storageKey,JSON.stringify(trades));localStorage.setItem(strategyKey,JSON.stringify(strategies));localStorage.setItem(propertyKey,JSON.stringify(customProperties);render();}await syncCloud()}catch(e){setSync('Local',false)}}
+    function persist(){persistLocal();clearTimeout(window.__cloudTimer);window.__cloudTimer=setTimeout(syncCloud,500);}
+    function filtered(){const q=($('#tradeSearch')?.value||'').toLowerCase().trim();const today=new Date().toISOString().slice(0,10);return trades.filter(t=>{if(activeFilter==='wins'&&t.outcome!==true)return false;if(activeFilter==='losses'&&t.outcome!==false)return false;if(activeFilter==='open'&&t.outcome!==null)return false;if(activeView==='today'&&t.date!==today)return false;return !q||JSON.stringify(t).toLowerCase().includes(q)});}
+    function tag(text,cls='neutral'){return text?`<span class="tag ${cls}">${esc(text)}</span>`:''}
+    function render(){
+      const rows=filtered();
+      $('#tableHead').innerHTML='<th class="trade-name-col">TRADE</th><th>POSITION</th><th>SESSION</th><th>DATE</th><th>DOW</th><th>TRADE TYPE</th><th>CONFIRMATION</th><th>RR</th><th>ENTRY TF</th><th>NXT RISK</th><th>FORECAST</th><th>STRATEGY</th><th>OUTCOME</th><th></th>';
+      $('#tradeBody').innerHTML=rows.map(t=>`<tr data-id="${esc(t.id)}" class="${selectedId===t.id?'selected':''}"><td class="trade-name-col"><span class="row-icon">▱</span><b>${esc(t.symbol||'Untitled trade')}</b></td><td>${tag(t.position,t.position==='BUY'?'buy':'sell')}</td><td>${tag(t.session)}</td><td>${esc(formatDate(t.date))}</td><td>${tag(t.dow||dayName(t.date),t.dow==='TUESDAY'?'pink':'green')}</td><td>${tag(t.type,'yellow')}</td><td>${(t.confirmation||[]).slice(0,4).map(x=>tag(x,'purple')).join(' ')}${(t.confirmation||[]).length>4?tag('+'+((t.confirmation||[]).length-4),'gray'):''}</td><td>${tag(t.rr,'peach')}</td><td>${tag(t.entryTF)}</td><td>${tag(t.risk,'blue')}</td><td>${tag(t.forecast,t.forecast?.includes('LOW')?'gray':'purple')}</td><td>${tag(t.strategy||'Add strategy','strategy')}</td><td><span class="check ${t.outcome===true?'checked':''}">${t.outcome===true?'✓':''}</span></td><td><button class="row-more" data-more="${esc(t.id)}">•••</button></td></tr>`).join('');
+      $$('#tradeBody tr').forEach(r=>r.onclick=e=>{if(e.target.closest('.row-more'))return;openTrade(r.dataset.id)});
+      $('#allCount').textContent=trades.length;$('#strategyCount').textContent=strategies.length;
+      const reviewed=trades.filter(t=>t.notes?.lesson||t.notes?.execution).length;$('#statTrades').textContent=trades.length;$('#statWins').textContent=trades.filter(t=>t.outcome===true).length;$('#statReviewed').textContent=(trades.length?Math.round(reviewed/trades.length*100):0)+'%';
+      $('#tableFooter').innerHTML=`<span>COUNT ${rows.length}</span><span>CHECKED ${trades.filter(t=>t.outcome!==null).length}</span><span>REVIEWED ${reviewed}</span><span>COMPLETION ${trades.length?Math.round(trades.filter(t=>t.outcome!==null).length/trades.length*100):0}%</span>`;
+      renderGallery(rows);renderReviews();renderProperties();renderStrategies();
+    }
+    function renderGallery(rows){$('#galleryView').innerHTML=rows.map(t=>`<button class="gallery-card" data-gallery-id="${esc(t.id)}"><div class="gallery-top"><span>${tag(t.position,t.position==='BUY'?'buy':'sell')}</span><span>${esc(formatDate(t.date))}</span></div><h3>${esc(t.symbol||'Untitled trade')}</h3><p>${esc(t.strategy||'No strategy selected')}</p><div>${(t.confirmation||[]).slice(0,3).map(x=>tag(x,'purple')).join(' ')}</div><footer><span>RR ${esc(t.rr||'—')}</span><span>${t.outcome===true?'✓ Reviewed outcome':t.outcome===false?'Loss / review':'Incomplete'}</span></footer></button>`).join('')||'<div class="empty-state">No trades match this view.</div>';$$('[data-gallery-id]').forEach(b=>b.onclick=()=>openTrade(b.dataset.galleryId));}
+    function renderReviews(){const items=[...trades].filter(t=>t.notes?.lesson||t.notes?.execution);$('#reviewCards').innerHTML=items.map(t=>`<button class="review-card" data-review-id="${esc(t.id)}"><div><span class="review-symbol">${esc(t.symbol)}</span>${tag(t.strategy||'No strategy','strategy')}</div><p>${esc(t.notes?.lesson||t.notes?.execution||'No review recorded yet.')}</p><footer><span>Setup ${esc(t.notes?.setupRating||'—')}/10</span><span>Execution ${esc(t.notes?.executionRating||'—')}/10</span><span>${esc(formatDate(t.date))}</span></footer></button>`).join('')||'<div class="empty-state">Complete a trade review and it will appear here.</div>';$$('[data-review-id]').forEach(b=>b.onclick=()=>openTrade(b.dataset.reviewId));}
+    function openTrade(id){selectedId=id;const t=trades.find(x=>x.id===id);if(!t)return;$('#drawerTitle').textContent=t.symbol||'Untitled trade';$('#drawerSub').textContent=formatDate(t.date);$('#tradeDrawer').classList.add('open');$('#drawerBackdrop').classList.add('open');$('#tradeDrawer').setAttribute('aria-hidden','false');renderDrawer(t);render();}
+    function renderDrawer(t){
+      const fields=[['POSITION','position','select',['BUY','SELL']],['CONFIRMATION','confirmation','tags'],['DATE','date','date'],['ENTRY TF','entryTF','select',['1m','5m','15m','30m','1H','4H','1D','1W']],['RR','rr','text'],['NXT RISK','risk','text'],['DOW','dow','select',['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY']],['FORECAST','forecast','text'],['TRADE TYPE','type','select',['CONTINUATION','REVERSAL','BREAKOUT','PULLBACK','RANGE']],['SESSION','session','select',['NYKZ','ASKZ','LONDON','NEW YORK','ASIA','SYDNEY']],['STRATEGY','strategy','strategy'],['OUTCOME','outcome','checkbox']];
+      $('#propertyGrid').innerHTML=fields.map(([label,key,type,opts])=>{const v=t[key];if(type==='checkbox')return `<label class="prop-row"><span>${label}</span><input data-field="${key}" type="checkbox" ${v===true?'checked':''}/></label>`;if(type==='select')return `<label class="prop-row"><span>${label}</span><select data-field="${key}">${opts.map(o=>`<option value="${esc(o)}" ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select></label>`;if(type==='strategy')return `<label class="prop-row"><span>${label}</span><div class="strategy-select"><select data-field="${key}"><option value="">Select strategy…</option>${strategies.map(o=>`<option value="${esc(o)}" ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select><button type="button" id="quickStrategy">＋</button></div></label>`;if(type==='tags')return `<label class="prop-row"><span>${label}</span><input data-field="${key}" value="${esc((v||[]).join(', '))}" placeholder="Sweep, MSS, FVG…" /></label>`;return `<label class="prop-row"><span>${label}</span><input data-field="${key}" type="${type}" value="${esc(v||'')}" /></label>`}).join('')+customProperties.map(p=>customField(p,t)).join('');
+      $('#fThesis').value=t.notes?.thesis||'';$('#fConfluences').value=t.notes?.confluences||'';$('#fExecution').value=t.notes?.execution||'';$('#fLesson').value=t.notes?.lesson||'';$('#fEvidence').value=t.notes?.evidence||'';$('#fSetupRating').value=t.notes?.setupRating||7;$('#fExecutionRating').value=t.notes?.executionRating||7;$('#setupRatingOut').value=$('#fSetupRating').value;$('#executionRatingOut').value=$('#fExecutionRating').value;$('#aiOutput').textContent='AI review is ready. It will use only the information recorded in this trade.';
+      $('#quickStrategy')?.addEventListener('click',()=>openManager('strategies'));
+    }
+    function customField(p,t){const v=t.custom?.[p.id]??'';if(p.type==='checkbox')return `<label class="prop-row"><span>${esc(p.name.toUpperCase())}</span><input data-custom-field="${esc(p.id)}" type="checkbox" ${v===true?'checked':''}/></label>`;if(p.type==='select')return `<label class="prop-row"><span>${esc(p.name.toUpperCase())}</span><input data-custom-field="${esc(p.id)}" value="${esc(v)}" placeholder="Type or select" /></label>`;return `<label class="prop-row"><span>${esc(p.name.toUpperCase())}</span><input data-custom-field="${esc(p.id)}" type="${p.type==='number'?'number':p.type==='date'?'date':'text'}" value="${esc(v)}" /></label>`;}
+    function collectTrade(){const t=trades.find(x=>x.id===selectedId);if(!t)return null;$('#propertyGrid').querySelectorAll('[data-field]').forEach(el=>{const k=el.dataset.field;if(el.type==='checkbox')t[k]=el.checked;else if(k==='confirmation')t[k]=el.value.split(',').map(x=>x.trim()).filter(Boolean);else t[k]=el.value});t.dow=dayName(t.date);t.custom=t.custom||{};$('#propertyGrid').querySelectorAll('[data-custom-field]').forEach(el=>t.custom[el.dataset.customField]=el.type==='checkbox'?el.checked:el.value);t.notes={...(t.notes||{}),thesis:$('#fThesis').value,confluences:$('#fConfluences').value,execution:$('#fExecution').value,lesson:$('#fLesson').value,evidence:$('#fEvidence').value,setupRating:Number($('#fSetupRating').value),executionRating:Number($('#fExecutionRating').value)};return t;}
+    function saveTrade(){const t=collectTrade();if(!t)return;persist();openTrade(t.id);$('#saveTradeBtn').textContent='Saved';setTimeout(()=>$('#saveTradeBtn').textContent='Save',900);}
+    function newTrade(){const id='t'+Date.now();const now=new Date();const date=now.toISOString().slice(0,10);trades.unshift({id,symbol:'NEW TRADE',position:'BUY',session:'NYKZ',date,dow:dayName(date),type:'CONTINUATION',confirmation:[],rr:'1:2RR',entryTF:'1H',risk:'0.5%',forecast:'',strategy:strategies[0]||'',outcome:null,notes:{}});persist();render();openTrade(id);}
+    function duplicateTrade(){const t=trades.find(x=>x.id===selectedId);if(!t)return;const copy=JSON.parse(JSON.stringify(t));copy.id='t'+Date.now();copy.symbol=t.symbol+' copy';trades.unshift(copy);persist();render();openTrade(copy.id);}
+    function renderProperties(){const el=$('#propertyList');if(!el)return;el.innerHTML=customProperties.map(p=>`<div class="manager-item"><span class="property-icon">☷</span><strong>${esc(p.name)}</strong><small>${esc(p.type)}</small><button data-delete-property="${esc(p.id)}">×</button></div>`).join('')||'<div class="manager-empty">No custom properties yet.</div>';$$('[data-delete-property]').forEach(b=>b.onclick=()=>{customProperties=customProperties.filter(p=>p.id!==b.dataset.deleteProperty);persist();render()});}
+    function renderStrategies(){const el=$('#strategyList');if(!el)return;el.innerHTML=strategies.map(s=>`<div class="manager-item"><span class="strategy-icon">◇</span><strong>${esc(s)}</strong><small>Reusable</small><button data-delete-strategy="${esc(s)}">×</button></div>`).join('')||'<div class="manager-empty">No strategies yet.</div>';$$('[data-delete-strategy]').forEach(b=>b.onclick=()=>{strategies=strategies.filter(s=>s!==b.dataset.deleteStrategy);persist();render()});}
+    function openManager(which='properties'){$('#propertyModal').hidden=false;$$('[data-manager]').forEach(b=>b.classList.toggle('active',b.dataset.manager===which));$('#propertyManager').hidden=which!=='properties';$('#strategyManager').hidden=which!=='strategies';renderProperties();renderStrategies();}
+    function switchMain(view){activeView=view;$('#database').hidden=view!=='table';$('#galleryView').hidden=view!=='gallery';$('#reviewsView').hidden=view!=='reviews';$('#libraryView').hidden=true;$$('[data-main-view]').forEach(b=>b.classList.toggle('active',b.dataset.mainView===view));render();}
+    function runLocalAI(t){const n=t.notes||{};const missing=[];if(!t.strategy)missing.push('strategy');if(!n.thesis)missing.push('thesis');if(!n.execution)missing.push('execution notes');if(!n.confluences)missing.push('confluences');const adherence=t.strategy&&n.thesis&&n.execution?'The recorded entry contains the main evidence needed to compare the plan with execution.':'The journal is missing some decision evidence, so adherence cannot be fully assessed.';const outcome=t.outcome===true?'The recorded outcome is marked positive.':t.outcome===false?'The recorded outcome is marked negative.':'The outcome is still incomplete.';return `<strong>Summary</strong><p>${esc(adherence)} ${esc(outcome)}</p><strong>Recorded evidence</strong><p>Strategy: ${esc(t.strategy||'not recorded')}. Confirmation: ${esc((t.confirmation||[]).join(', ')||'not recorded')}. Setup ${esc(n.setupRating||'—')}/10; execution ${esc(n.executionRating||'—')}/10.</p><strong>Missing evidence</strong><p>${missing.length?esc(missing.join(', ')):'Nothing essential from the journal fields is currently missing.'}</p><strong>Next review point</strong><p>${esc(n.lesson||'Record one specific lesson so the next review can compare this trade with future trades.')}</p>`;}
+    const resolvedAIEndpoint=aiEndpoint || (projectId ? `https://us-central1-${projectId}.cloudfunctions.net/reviewJournal` : '');
+    async function runAI(t){const output=$('#aiOutput');output.innerHTML='<span class="ai-loading">✦ Reviewing your journal evidence…</span>';const n=t.notes||{};const evidence={symbol:t.symbol,position:t.position,session:t.session,date:t.date,tradeType:t.type,confirmation:t.confirmation||[],rr:t.rr,entryTF:t.entryTF,risk:t.risk,forecast:t.forecast,strategy:t.strategy||null,outcome:t.outcome,thesis:n.thesis||'',confluences:n.confluences||'',execution:n.execution||'',setupRating:n.setupRating||null,executionRating:n.executionRating||null,lesson:n.lesson||'',custom:t.custom||{}};if(resolvedAIEndpoint){try{const token=auth?.currentUser?await auth.currentUser.getIdToken():'';const res=await fetch(resolvedAIEndpoint,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({evidence})});if(!res.ok)throw new Error(String(res.status));const data=await res.json();output.innerHTML=esc(data?.report||data?.summary||'AI review completed.').replace(/\n/g,'<br>');return}catch(e){}}
+      output.innerHTML=runLocalAI(t);
+    }
+    function exportJournal(){const payload={version:3,exportedAt:new Date().toISOString(),trades,strategies,customProperties};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trade-avata-journal.json';a.click();URL.revokeObjectURL(a.href);}
+    function importJournal(file){const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!Array.isArray(d.trades))throw new Error('Invalid journal');trades=d.trades;strategies=Array.isArray(d.strategies)?d.strategies:strategies;customProperties=Array.isArray(d.customProperties)?d.customProperties:customProperties;persist();render();if(trades[0])openTrade(trades[0].id);}catch(e){alert('That journal file could not be imported.')}};reader.readAsText(file);}
+
+    $('#newTradeBtn').onclick=newTrade;$('#newTradeSide').onclick=newTrade;$('#newRowBtn').onclick=newTrade;$('#saveTradeBtn').onclick=saveTrade;$('#duplicateTradeBtn').onclick=duplicateTrade;$('#closeDrawer').onclick=()=>{$('#tradeDrawer').classList.remove('open');$('#drawerBackdrop').classList.remove('open')};$('#drawerBackdrop').onclick=()=>$('#closeDrawer').click();$('#tradeSearch').oninput=render;$('#filterBtn').onclick=()=>{activeFilter=activeFilter==='all'?'wins':activeFilter==='wins'?'losses':activeFilter==='losses'?'open':'all';$('#filterBtn').textContent=`≡ ${activeFilter==='all'?'Filter':activeFilter}`;render()};$('#sortBtn').onclick=()=>{trades.sort((a,b)=>b.date.localeCompare(a.date));persist();render()};$('#aiReviewBtn').onclick=()=>selectedId?runAI(trades.find(t=>t.id===selectedId)):null;$('#runDrawerAI').onclick=()=>{const t=collectTrade();if(t){persist();runAI(t)}};$('#fSetupRating').oninput=e=>$('#setupRatingOut').value=e.target.value;$('#fExecutionRating').oninput=e=>$('#executionRatingOut').value=e.target.value;
+    $('#strategiesBtn').onclick=()=>openManager('strategies');$('#propertiesBtn').onclick=()=>openManager('properties');$('#addPropertyBtn').onclick=()=>openManager('properties');$('#closePropertyModal').onclick=()=>$('#propertyModal').hidden=true;$$('[data-manager]').forEach(b=>b.onclick=()=>openManager(b.dataset.manager));$('#createPropertyBtn').onclick=()=>{const name=$('#propertyInput').value.trim();if(!name)return;customProperties.push({id:'p'+Date.now(),name,type:$('#propertyType').value});$('#propertyInput').value='';persist();render()};$('#createStrategyBtn').onclick=()=>{const v=$('#strategyInput').value.trim();if(!v)return;if(!strategies.includes(v))strategies.push(v);$('#strategyInput').value='';persist();render();};$('#resetJournalBtn').onclick=()=>{if(confirm('Reset the journal demo data?')){trades=seedTrades.map(t=>JSON.parse(JSON.stringify(t)));strategies=[...defaultStrategies];customProperties=[];persist();render();openTrade(trades[0].id)}};
+    $$('[data-filter]').forEach(b=>b.onclick=()=>{activeFilter=activeFilter===b.dataset.filter?'all':b.dataset.filter;render();});$$('[data-view]').forEach(b=>b.onclick=()=>{const view=b.dataset.view;$$('[data-view]').forEach(x=>x.classList.toggle('active',x===b));if(view==='gallery')switchMain('gallery');else if(view==='reviews')switchMain('reviews');else{activeView=view==='today'?'table':'table';switchMain('table');if(view==='today')activeFilter='all';}});$$('[data-main-view]').forEach(b=>b.onclick=()=>switchMain(b.dataset.mainView));
+    $('#exportBtn').onclick=exportJournal;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>e.target.files[0]&&importJournal(e.target.files[0]);
+    watchAuth(loadCloud);
+    render();if(selectedId)openTrade(selectedId);
+  </script>
+
+  <style is:global>
+    .journal-app{--ink:#202124;--muted:#8b8f94;--line:#e7e7e3;--soft:#fafaf8;--blue:#1769e0;min-height:100vh;background:#fff;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    .journal-topbar{height:58px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 18px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:50}.top-left,.top-actions{display:flex;align-items:center;gap:10px}.journal-brand{display:flex;align-items:center;gap:8px;color:#17191c;text-decoration:none;font-weight:800;font-size:13px}.journal-brand img{width:27px;height:27px}.slash{color:#c5c7c8}.crumb{color:#8b8f94;font-size:11px}.crumb-current{font-size:11px}.top-actions{gap:6px}.top-btn{border:1px solid #dfdfdb;background:#fff;color:#5c6167;border-radius:7px;padding:7px 10px;font-size:11px;cursor:pointer}.top-btn:hover,.drawer-btn:hover{background:#f6f6f3}.top-btn.primary,.drawer-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.top-btn.ai-top{color:#5145a8;background:#f8f6ff;border-color:#e6e1fa}.sync-pill{display:flex;align-items:center;gap:5px;color:#92969b;font-size:10px;margin-right:4px}.sync-pill i{width:6px;height:6px;border-radius:50%;background:#b7babd}.sync-pill i.good{background:#31a05b}
+    .journal-layout{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 58px)}.journal-sidebar{background:#fbfbf9;border-right:1px solid var(--line);padding:17px 11px;display:flex;flex-direction:column}.side-heading{display:flex;gap:9px;align-items:center;padding:5px 8px 18px}.workspace-mark{width:26px;height:26px;border-radius:7px;background:#eeeafb;color:#6758c7;display:grid;place-items:center;font-size:12px}.side-heading strong{font-size:9px;letter-spacing:.1em}.side-heading small{display:block;color:#a0a4a8;font-size:9px;margin-top:3px}.side-create{border:1px solid #e0e0dc;background:#fff;border-radius:6px;padding:8px 9px;text-align:left;font-size:11px;color:#34383d;margin:0 3px 14px;cursor:pointer}.side-nav,.side-group{display:grid;gap:2px}.side-nav button,.side-group button,.side-bottom button{border:0;background:transparent;text-align:left;border-radius:6px;padding:8px 9px;color:#70757b;font-size:11px;cursor:pointer}.side-nav button:hover,.side-nav button.active,.side-group button:hover{background:#efefed;color:#23272b}.side-nav button{display:flex;align-items:center;gap:8px}.side-nav em,.side-group em{font-style:normal;margin-left:auto;color:#b1b4b7;font-size:9px}.side-group{border-top:1px solid #e9e9e5;margin-top:15px;padding-top:13px}.side-group label{padding:0 9px 5px;color:#a4a7aa;font-size:8px;letter-spacing:.12em}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px}.dot.win{background:#55a96a}.dot.loss{background:#d96c6c}.dot.open{background:#b8bbc0}.side-bottom{margin-top:auto;border-top:1px solid #e9e9e5;padding-top:11px}.storage-note{display:flex;gap:8px;padding:7px 9px;color:#8e9398}.storage-note>span{font-size:15px}.storage-note strong{display:block;font-size:9px;color:#6e7378}.storage-note small{display:block;font-size:8px;margin-top:2px}.journal-main{min-width:0;overflow:hidden}.journal-header{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;padding:40px 34px 25px}.eyebrow{font-size:8px;letter-spacing:.14em;color:#a1a4a8;font-weight:800}.journal-header h1{font-size:34px;line-height:1;margin:8px 0 9px;letter-spacing:-.05em}.journal-header p{margin:0;color:#8a8f94;font-size:11px}.header-stats{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}.header-stats div{min-width:84px;padding:9px 12px;border-left:1px solid var(--line)}.header-stats div:first-child{border-left:0}.header-stats span{display:block;color:#9b9fa4;font-size:8px}.header-stats strong{display:block;margin-top:3px;font-size:14px}.database-toolbar{display:flex;justify-content:space-between;gap:15px;padding:0 34px;border-bottom:1px solid var(--line)}.view-tabs,.database-actions{display:flex;align-items:center;gap:5px}.view-tabs button,.database-actions>button{border:0;background:transparent;color:#7d8288;font-size:10px;padding:11px 5px;cursor:pointer}.view-tabs button.active{color:#22272b;border-bottom:2px solid #22272b}.search-box{display:flex;align-items:center;gap:4px;border:1px solid #e6e6e2;border-radius:5px;padding:0 7px;height:28px}.search-box span{color:#9ca0a5}.search-box input{border:0;outline:0;width:150px;font-size:10px}.database{overflow:hidden}.database-scroll{overflow:auto;max-width:100%}.journal-table{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0;font-size:10px}.journal-table th{height:30px;background:#fbfbf9;color:#9a9ea2;font-size:8px;letter-spacing:.02em;font-weight:700;text-align:left;padding:0 9px;border-bottom:1px solid var(--line);border-right:1px solid #f0f0ed;white-space:nowrap}.journal-table td{height:40px;padding:5px 9px;border-bottom:1px solid #efefec;border-right:1px solid #f2f2ef;white-space:nowrap;color:#62676d}.journal-table tbody tr{cursor:pointer}.journal-table tbody tr:hover,.journal-table tbody tr.selected{background:#f8fbff}.trade-name-col{position:sticky;left:0;z-index:3;background:#fff;min-width:155px}.journal-table th.trade-name-col{background:#fbfbf9}.journal-table tr:hover .trade-name-col,.journal-table tr.selected .trade-name-col{background:#f8fbff}.row-icon{display:inline-grid;place-items:center;width:17px;color:#a5a9ad;margin-right:3px}.tag{display:inline-block;padding:4px 6px;border-radius:4px;margin:1px 2px 1px 0;font-size:8px;line-height:1;color:#5f6368;max-width:130px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;background:#e9e9e7}.tag.buy{background:#dceff0;color:#42676b}.tag.sell{background:#f3dddd;color:#875252}.tag.green{background:#dcefe0}.tag.pink{background:#f4dede}.tag.yellow{background:#f6e9c7}.tag.purple{background:#e5dcf1}.tag.peach{background:#f1ddc9}.tag.blue{background:#d9e8f1}.tag.gray{background:#e9e9e9}.tag.strategy{background:#e7edf7;color:#45607e}.check{display:inline-grid;place-items:center;width:15px;height:15px;border:1px solid #cfd1ce;border-radius:3px;color:#fff;font-size:9px}.check.checked{background:#23823c;border-color:#23823c}.row-more{border:0;background:transparent;color:#9da1a5;cursor:pointer}.new-row{border:0;background:#fff;color:#8c9196;font-size:10px;padding:9px 12px;cursor:pointer}.database-footer{display:flex;gap:28px;padding:7px 12px;border-top:1px solid #efefec;color:#a0a3a7;font-size:8px}.drawer-backdrop{display:none;position:fixed;inset:0;background:rgba(25,28,31,.16);z-index:80}.drawer-backdrop.open{display:block}.trade-drawer{position:fixed;top:0;right:-590px;width:min(590px,94vw);height:100vh;background:#fff;z-index:90;border-left:1px solid #e1e1de;box-shadow:-20px 0 55px rgba(0,0,0,.12);transition:right .2s ease}.trade-drawer.open{right:0}.drawer-top{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line);min-height:65px}.drawer-close{border:0;background:transparent;color:#7c8288;font-size:25px;cursor:pointer}.drawer-title-wrap{flex:1}.drawer-title-wrap h2{font-size:21px;letter-spacing:-.04em;margin:3px 0 2px}.drawer-title-wrap>span:last-child{font-size:9px;color:#9a9ea3}.drawer-actions{display:flex;gap:5px}.drawer-btn{border:1px solid #dddeda;background:#fff;border-radius:6px;padding:7px 10px;color:#545a60;font-size:10px;cursor:pointer}.drawer-scroll{height:calc(100vh - 65px);overflow:auto;padding:0 20px 60px}.record-section{padding:20px 0;border-bottom:1px solid #e9e9e5}.record-section.first{padding-top:15px}.section-title{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}.section-title strong{font-size:11px}.section-title span{font-size:9px;color:#a0a4a8}.property-grid{display:grid}.prop-row{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;min-height:38px;border-bottom:1px solid #f0f0ed;font-size:10px}.prop-row>span{color:#8b9095}.prop-row input,.prop-row select{width:100%;border:0;background:transparent;outline:0;font-size:10px;color:#34383d;padding:8px 0}.prop-row input:focus,.prop-row select:focus{color:#111}.prop-row input[type=checkbox]{width:15px}.strategy-select{display:flex;align-items:center}.strategy-select select{flex:1}.strategy-select button{border:0;background:transparent;color:#8c9196;cursor:pointer}.field{display:grid;gap:5px;margin-top:13px}.field>span{font-size:9px;color:#8b9095}.field textarea,.field input{width:100%;box-sizing:border-box;border:1px solid #e1e1dd;border-radius:6px;padding:9px;font-size:10px;outline:0;min-height:74px;resize:vertical}.field input{min-height:auto}.field textarea:focus,.field input:focus{border-color:#bfcbd8}.ratings{display:grid;grid-template-columns:1fr 1fr;gap:18px}.ratings label{display:grid;gap:7px}.ratings span{font-size:9px;color:#7e848a}.ratings output{font-weight:800;color:#222}.ratings input{width:100%}.ai-section{border-bottom:0}.ai-head{display:flex;align-items:center;gap:9px}.ai-orb,.ai-badge{width:31px;height:31px;border-radius:8px;background:#eeeafb;color:#6555c7;display:grid;place-items:center}.ai-head>div:nth-child(2){flex:1}.ai-head strong{display:block;font-size:11px}.ai-head span{display:block;font-size:9px;color:#9a9ea3;margin-top:2px}.ai-output{margin-top:12px;border:1px solid #e2e5ed;background:#fafbff;border-radius:7px;padding:12px;color:#646b75;font-size:10px;line-height:1.7}.ai-output strong{color:#333;display:block;margin-bottom:1px}.ai-output p{margin:0 0 9px}.ai-loading{color:#6758c7}.modal{position:fixed;inset:0;z-index:110;background:rgba(25,28,31,.22);display:grid;place-items:center;padding:20px}.modal[hidden]{display:none}.modal-card{position:relative;width:min(570px,96vw);max-height:86vh;overflow:auto;background:#fff;border:1px solid #dfdfdb;border-radius:11px;padding:25px;box-shadow:0 25px 70px rgba(0,0,0,.18)}.modal-card h2{font-size:25px;letter-spacing:-.04em;margin:7px 0}.modal-card>p{font-size:10px;color:#878c91}.modal-close{position:absolute;right:14px;top:11px;border:0;background:transparent;font-size:22px;color:#8a8f94;cursor:pointer}.modal-tabs{display:flex;gap:15px;border-bottom:1px solid var(--line);margin-top:20px}.modal-tabs button{border:0;background:transparent;padding:9px 1px;font-size:10px;color:#8a8f94;cursor:pointer}.modal-tabs button.active{color:#202428;border-bottom:2px solid #202428}.create-line{display:flex;gap:6px;margin:16px 0}.create-line input,.create-line select{flex:1;border:1px solid #dedfdb;border-radius:6px;padding:9px;font-size:10px;outline:0}.manager-help{font-size:9px;color:#9a9ea3;margin:-6px 0 13px}.manager-list{border-top:1px solid #e9e9e5}.manager-item{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #eeeeeb}.manager-item strong{font-size:10px;flex:1}.manager-item small{color:#a0a4a8;font-size:8px}.manager-item button{border:0;background:transparent;color:#a0a4a8;cursor:pointer}.strategy-icon,.property-icon{width:22px;height:22px;border-radius:5px;background:#f0edf9;color:#6858c6;display:grid;place-items:center;font-size:10px}.manager-empty{padding:20px 0;color:#9a9ea3;font-size:10px}.gallery-view{padding:25px 34px;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}.gallery-card{border:1px solid #e3e3df;background:#fff;border-radius:8px;text-align:left;padding:13px;cursor:pointer}.gallery-card:hover{border-color:#c8d4e2;box-shadow:0 8px 25px rgba(30,50,70,.06)}.gallery-top{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#9a9ea3}.gallery-card h3{font-size:18px;margin:18px 0 5px}.gallery-card p{font-size:10px;color:#888d92;margin:0 0 12px}.gallery-card footer{display:flex;justify-content:space-between;border-top:1px solid #eeeeeb;padding-top:10px;margin-top:13px;color:#92969b;font-size:8px}.reviews-view{padding:35px 34px}.reviews-intro{display:flex;gap:13px;max-width:720px;margin-bottom:25px}.reviews-intro h2{font-size:26px;letter-spacing:-.04em;margin:7px 0}.reviews-intro p{font-size:11px;color:#858a90;line-height:1.6;margin:0}.review-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:9px}.review-card{border:1px solid #e2e2de;background:#fff;border-radius:8px;text-align:left;padding:13px;cursor:pointer}.review-card:hover{background:#fbfcff}.review-card>div{display:flex;align-items:center;gap:6px}.review-symbol{font-weight:800;font-size:11px}.review-card p{font-size:10px;color:#6e747a;line-height:1.6;min-height:45px}.review-card footer{display:flex;gap:10px;color:#9b9fa4;font-size:8px;border-top:1px solid #eee;padding-top:9px}.empty-state{padding:50px 20px;text-align:center;color:#9a9ea3;font-size:10px}
+    @media(max-width:900px){.journal-layout{grid-template-columns:1fr}.journal-sidebar{display:none}.journal-header{padding:30px 18px 20px}.database-toolbar{padding:0 18px}.trade-drawer{width:100%}.top-left .crumb,.top-left .slash{display:none}.header-stats{display:none}}
+    @media(max-width:650px){.top-actions .top-btn:not(.primary):not(.ai-top){display:none}.journal-topbar{padding:0 10px}.journal-header h1{font-size:29px}.database-actions .search-box{width:30px}.search-box input{display:none}.database-toolbar{gap:5px}.ratings{grid-template-columns:1fr}.prop-row{grid-template-columns:125px minmax(0,1fr)}.gallery-view,.reviews-view{padding:22px 16px}}
+  </style>
+</PrivateAppLayout>
